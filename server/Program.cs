@@ -67,8 +67,17 @@ if (app.Environment.IsDevelopment())
 }
 
 // 8. Sécurité + CORS
-app.UseHttpsRedirection();
 app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
+// 👉 HTTPS redirection activée uniquement si HTTPS est bien configuré
+if (app.Environment.IsDevelopment())
+{
+    var httpsUrl = builder.Configuration["ASPNETCORE_HTTPS_PORT"];
+    if (!string.IsNullOrEmpty(httpsUrl))
+    {
+        app.UseHttpsRedirection();
+    }
+}
 
 // 9. Authentification & Autorisation
 app.UseAuthentication();
