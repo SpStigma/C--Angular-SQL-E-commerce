@@ -8,6 +8,7 @@ using server.Data;
 using server.Dtos;
 using server.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 
 namespace server.Controllers
 {
@@ -18,10 +19,10 @@ namespace server.Controllers
         private readonly AppDbContext _context;
         private readonly JwtSettings _jwtSettings;
 
-        public UsersController(AppDbContext context, JwtSettings jwtSettings)
+        public UsersController(AppDbContext context, IOptions<JwtSettings> jwtOptions)
         {
             _context = context;
-            _jwtSettings = jwtSettings;
+            _jwtSettings = jwtOptions.Value;
         }
 
         [HttpPost("register")]
@@ -59,12 +60,7 @@ namespace server.Controllers
                 new Claim(ClaimTypes.Role, user.Role ?? "user")
             };
 
-            if (string.IsNullOrEmpty(_jwtSettings.Key))
-            {
-                throw new InvalidOperationException("JWT Key is not configured.");
-            }
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
@@ -79,8 +75,6 @@ namespace server.Controllers
 
             return Ok(new { token = tokenString });
         }
-
-
 
         [Authorize]
         [HttpGet("me")]
@@ -123,44 +117,42 @@ namespace server.Controllers
             return Ok(user);
         }
 
-            [HttpGet("public")]
-            public IActionResult GetPublicData()
-            {
-                return Ok(new { message = "Donnée publique accessible à tous" });
-            }
-
-
-            [Authorize]
-            [HttpGet("role")]
-            public IActionResult GetRole()
-            {
-                var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-                return Ok(new { role });
-            }
-
-            [Authorize(Roles = "admin")]
-            public IActionResult AdminOnlyRoute()
-            {
-                return Ok("Tu es admin !");
-            }
-
-            [Authorize(Roles = "admin")]
-            [HttpPut("{id}/role")]
-            public async Task<IActionResult> UpdateRole(int id, [FromBody] string newRole)
-            {
-                var user = await _context.Users.FindAsync(id);
-
-                if (user == null)
-                {
-                    return NotFound(new { message = "Utilisateur introuvable" });
-                }
-
-                user.Role = newRole;
-                await _context.SaveChangesAsync();
-
-                return Ok(new { message = $"Rôle de {user.Username} mis à jour en {newRole}" });
-            }
+        [HttpGet("public")]
+        public IActionResult GetPublicData()
+        {
+            return Ok(new { message = "Donnée publique accessible à tous" });
         }
 
-        
+        [Authorize]
+        [HttpGet("role")]
+        public IActionResult GetRole()
+        {
+            var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            return Ok(new { role });
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpGet("admin-only")]
+        public IActionResult AdminOnlyRoute()
+        {
+            return Ok("Tu es admin !");
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPut("{id}/role")]
+        public async Task<IActionResult> UpdateRole(int id, [FromBody] string newRole)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "Utilisateur introuvable" });
+            }
+
+            user.Role = newRole;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"Rôle de {user.Username} mis à jour en {newRole}" });
+        }
+    }
 }

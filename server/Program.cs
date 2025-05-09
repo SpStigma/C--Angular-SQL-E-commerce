@@ -1,89 +1,68 @@
-using server.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using server.Data;
+using server.Models; // pour JwtSettings
 using System.Text;
-using server.Models;
-using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Ajout des contrôleurs et outils de documentation
+// Configuration CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+// Configuration de JwtSettings à partir de appsettings.json
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+// Ajout du DbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Ajout des services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 2. Configuration EF Core + SQL Server
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// 3. CORS
-builder.Services.AddCors();
-
-// 4. JWT (authentification)
-var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
-if (jwtSettings == null)
-{
-    throw new InvalidOperationException("JwtSettings configuration is missing.");
-}
-builder.Services.AddSingleton(jwtSettings);
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+// Authentification JWT
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings.Issuer,
-        ValidAudience = jwtSettings.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key ?? throw new InvalidOperationException("JWT Key is null")))
-    };
-});
+        var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtSettings["Key"] ?? ""))
+        };
+    });
 
-// 5. Stripe
-builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
-StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
-
-// ----------------------------
-// Construction de l'app
-// ----------------------------
 var app = builder.Build();
 
-// 6. Middleware d’erreurs global
-app.UseMiddleware<ErrorHandlingMiddleware>();
-
-// 7. Swagger en mode dev
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// 8. Sécurité + CORS
-app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+// app.UseHttpsRedirection();
 
-// 👉 HTTPS redirection activée uniquement si HTTPS est bien configuré
-if (app.Environment.IsDevelopment())
-{
-    var httpsUrl = builder.Configuration["ASPNETCORE_HTTPS_PORT"];
-    if (!string.IsNullOrEmpty(httpsUrl))
-    {
-        app.UseHttpsRedirection();
-    }
-}
+app.UseCors("AllowAngularApp");
 
-// 9. Authentification & Autorisation
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 10. Routing des contrôleurs
 app.MapControllers();
 
 app.Run();

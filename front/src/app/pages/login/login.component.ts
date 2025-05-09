@@ -1,35 +1,35 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  imports: [FormsModule] // ← virgule ici corrigée
 })
 export class LoginComponent {
-  username = '';
-  password = '';
-  errorMessage = '';
+  username: string = '';
+  email: string = '';
+  password: string = '';
+  errorMessage: string = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private authService: AuthService) {}
 
   onSubmit() {
-    this.http.post<{ token: string }>(`${environment.apiUrl}/users/login`, {
+    const user = {
       username: this.username,
+      email: this.email,
       password: this.password
-    }).subscribe({
-      next: (response) => {
-        localStorage.setItem('token', response.token);
-        this.router.navigate(['/']); // ou vers /dashboard, etc.
+    };
+
+    this.authService.login(user).subscribe({
+      next: (res) => {
+        console.log('Connecté :', res);
       },
-      error: () => {
-        this.errorMessage = "Identifiants invalides";
+      error: (err) => {
+        console.error(err);
+        this.errorMessage = err.error?.message || 'Erreur de connexion';
       }
     });
   }

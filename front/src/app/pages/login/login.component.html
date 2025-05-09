@@ -1,6 +1,7 @@
 <h2>Connexion</h2>
 <form (ngSubmit)="onSubmit()">
   <input [(ngModel)]="username" name="username" placeholder="Nom d'utilisateur" required />
+  <input [(ngModel)]="email" name="email" placeholder="Email" required />
   <input [(ngModel)]="password" name="password" type="password" placeholder="Mot de passe" required />
   <button type="submit">Se connecter</button>
 </form>
