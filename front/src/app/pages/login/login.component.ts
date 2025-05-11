@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.component.html',
-  imports: [FormsModule] // ← virgule ici corrigée
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   username: string = '';
@@ -14,7 +17,7 @@ export class LoginComponent {
   password: string = '';
   errorMessage: string = '';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
     const user = {
@@ -24,8 +27,9 @@ export class LoginComponent {
     };
 
     this.authService.login(user).subscribe({
-      next: (res) => {
-        console.log('Connecté :', res);
+      next: (res: any) => {
+        localStorage.setItem('token', res.token);
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error(err);

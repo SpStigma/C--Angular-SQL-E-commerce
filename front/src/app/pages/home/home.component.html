@@ -1,1 +1,49 @@
-<p>home works!</p>
+<!-- Navbar -->
+<div class="navbar bg-base-100 shadow-md">
+  <div class="flex-1">
+    <a class="btn btn-ghost text-xl">VenteConsole</a>
+  </div>
+  <div class="flex-none">
+    <a routerLink="/login" class="btn btn-primary">Login / Register</a>
+  </div>
+</div>
+
+<!-- Carrousel -->
+<div class="carousel w-full mt-6">
+  <div id="slide1" class="carousel-item relative w-full">
+    <img src="https://picsum.photos/seed/console1/800/300" class="w-full object-cover rounded-xl" />
+    <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+      <a href="#slide3" class="btn btn-circle">❮</a>
+      <a href="#slide2" class="btn btn-circle">❯</a>
+    </div>
+  </div>
+  <div id="slide2" class="carousel-item relative w-full">
+    <img src="https://picsum.photos/seed/console2/800/300" class="w-full object-cover rounded-xl" />
+    <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+      <a href="#slide1" class="btn btn-circle">❮</a>
+      <a href="#slide3" class="btn btn-circle">❯</a>
+    </div>
+  </div>
+  <div id="slide3" class="carousel-item relative w-full">
+    <img src="https://picsum.photos/seed/console3/800/300" class="w-full object-cover rounded-xl" />
+    <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+      <a href="#slide2" class="btn btn-circle">❮</a>
+      <a href="#slide1" class="btn btn-circle">❯</a>
+    </div>
+  </div>
+</div>
+
+<!-- Grille de cartes produit -->
+<div class="py-10 px-4 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  <div class="card bg-base-100 shadow-xl" *ngFor="let product of products">
+    <figure><img [src]="product.image" alt="product image" class="h-48 w-full object-cover" /></figure>
+    <div class="card-body">
+      <h2 class="card-title">{{ product.title }}</h2>
+      <p>{{ product.description }}</p>
+      <div class="card-actions justify-between items-center">
+        <span class="text-lg font-bold">{{ product.price }} €</span>
+        <button class="btn btn-sm btn-accent">Voir</button>
+      </div>
+    </div>
+  </div>
+</div>
