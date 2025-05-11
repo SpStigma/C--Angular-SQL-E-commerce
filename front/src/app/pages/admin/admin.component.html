@@ -1,0 +1,50 @@
+<p>admin works!</p>
+<!-- Navbar admin -->
+<div class="navbar bg-base-200 shadow-md mb-6">
+  <div class="flex-1">
+    <a class="btn btn-ghost text-xl">Admin Dashboard</a>
+  </div>
+  <div class="flex-none">
+    <a routerLink="/home" class="btn btn-sm btn-outline">Retour au site</a>
+  </div>
+</div>
+
+<!-- Tableau de bord admin -->
+<div class="px-6 py-4">
+  <h1 class="text-2xl font-bold mb-6">Bienvenue sur l’espace administrateur</h1>
+
+  <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <!-- Bloc produits -->
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title">Produits</h2>
+        <p>Gère les produits disponibles sur le site (ajout, suppression, stock...)</p>
+        <div class="card-actions justify-end">
+          <a routerLink="/admin/products" class="btn btn-primary btn-sm">Gérer les produits</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bloc commandes -->
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title">Commandes</h2>
+        <p>Consulte toutes les commandes passées par les clients.</p>
+        <div class="card-actions justify-end">
+          <a routerLink="/admin/orders" class="btn btn-primary btn-sm">Gérer les commandes</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bloc utilisateurs -->
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title">Utilisateurs</h2>
+        <p>Gère les rôles et les accès des utilisateurs (client / admin).</p>
+        <div class="card-actions justify-end">
+          <a routerLink="/admin/users" class="btn btn-primary btn-sm">Gérer les utilisateurs</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

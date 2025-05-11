@@ -33,7 +33,8 @@ namespace server.Controllers
                 Name = productDto.Name,
                 Description = productDto.Description,
                 Price = productDto.Price,
-                Stock = productDto.Stock
+                Stock = productDto.Stock,
+                ImageUrl = productDto.ImageUrl // ← ajout ici
             };
 
             _context.Products.Add(product);
@@ -54,6 +55,7 @@ namespace server.Controllers
             product.Description = productDto.Description;
             product.Price = productDto.Price;
             product.Stock = productDto.Stock;
+            product.ImageUrl = productDto.ImageUrl; // ← ajout ici
 
             await _context.SaveChangesAsync();
             return NoContent();
@@ -90,5 +92,37 @@ namespace server.Controllers
         {
             throw new Exception("Erreur de test simulée");
         }
+
+        
+
+        [Authorize(Roles = "admin")]
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { message = "Fichier invalide" });
+            }
+
+            var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+            if (!Directory.Exists(uploadsDir))
+            {
+                Directory.CreateDirectory(uploadsDir);
+            }
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploadsDir, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var imageUrl = $"{baseUrl}/Uploads/{fileName}";
+
+            return Ok(new { imageUrl });
+        }
+
     }
 }

@@ -16,5 +16,8 @@ namespace server.Dtos
 
         [Range(0, int.MaxValue)]
         public int Stock { get; set; }
+
+        [StringLength(500)]
+        public string? ImageUrl { get; set; } // <- ici
     }
 }
