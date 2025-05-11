@@ -22,6 +22,8 @@ export class AdminProductsComponent implements OnInit {
   loadProducts(): void {
     this.productService.getAll().subscribe(products => {
       this.products = products;
+      // Initialise stockToAdd pour chaque produit
+      this.stockToAdd = {};
       products.forEach(product => {
         this.stockToAdd[product.id] = 0;
       });
@@ -29,18 +31,20 @@ export class AdminProductsComponent implements OnInit {
   }
 
   addStock(productId: number): void {
-    const amount = this.stockToAdd[productId];
-    if (amount <= 0) return;
-
-    this.productService.addStock(productId, amount).subscribe(() => {
-      this.loadProducts();
-    });
+    const quantity = this.stockToAdd[productId];
+    if (quantity > 0) {
+      this.productService.addStock(productId, quantity).subscribe({
+        next: () => this.loadProducts(),
+        error: err => console.error('Erreur lors de l’ajout de stock', err)
+      });
+    }
   }
 
   deleteProduct(productId: number): void {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
-      this.productService.delete(productId).subscribe(() => {
-        this.loadProducts();
+      this.productService.delete(productId).subscribe({
+        next: () => this.loadProducts(),
+        error: err => console.error('Erreur lors de la suppression', err)
       });
     }
   }
