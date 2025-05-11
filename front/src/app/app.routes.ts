@@ -22,19 +22,24 @@ export const routes: Routes = [
       import('./pages/admin/admin.component').then(m => m.AdminComponent)
   },
 
-{
-  path: 'admin/products',
-  loadComponent: () =>
-    import('./pages/admin/products/admin-products/admin-products.component').then(m => m.AdminProductsComponent)
-},
-{
-  path: 'admin/orders',
-  loadComponent: () =>
-    import('./pages/admin/orders/admin-orders/admin-orders.component').then(m => m.AdminOrdersComponent)
-},
-{
-  path: 'admin/users',
-  loadComponent: () =>
-    import('./pages/admin/users/admin-users/admin-users.component').then(m => m.AdminUsersComponent)
-}
+  {
+    path: 'admin/products',
+    loadComponent: () =>
+      import('./pages/admin/products/admin-products/admin-products.component').then(m => m.AdminProductsComponent)
+  },
+  {
+    path: 'admin/orders',
+    loadComponent: () =>
+      import('./pages/admin/orders/admin-orders/admin-orders.component').then(m => m.AdminOrdersComponent)
+  },
+  {
+    path: 'admin/users',
+    loadComponent: () =>
+      import('./pages/admin/users/admin-users/admin-users.component').then(m => m.AdminUsersComponent)
+  },
+  {
+    path: 'admin/add-product',
+    loadComponent: () =>
+      import('./pages/admin/add-product/add-product.component').then(m => m.AddProductComponent)
+  }
 ];

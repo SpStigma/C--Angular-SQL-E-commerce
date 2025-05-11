@@ -18,6 +18,6 @@ namespace server.Dtos
         public int Stock { get; set; }
 
         [StringLength(500)]
-        public string? ImageUrl { get; set; } // <- ici
+        public string? ImageUrl { get; set; }
     }
 }

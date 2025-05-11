@@ -1,0 +1,14 @@
+<div class="max-w-md mx-auto p-6 bg-white rounded shadow">
+  <h2 class="text-xl font-bold mb-4">Ajouter un produit</h2>
+  <form (ngSubmit)="onSubmit()" #productForm="ngForm">
+    <input [(ngModel)]="product.name" name="name" class="input input-bordered w-full mb-2" placeholder="Nom" required />
+    <input [(ngModel)]="product.description" name="description" class="input input-bordered w-full mb-2" placeholder="Description" required />
+    <input type="number" [(ngModel)]="product.price" name="price" class="input input-bordered w-full mb-2" placeholder="Prix" required />
+    <input type="number" [(ngModel)]="product.stock" name="stock" class="input input-bordered w-full mb-4" placeholder="Stock" required />
+
+    <!-- pour l'image -->
+    <input type="file" (change)="onFileSelected($event)" class="file-input file-input-bordered w-full mb-4" />
+
+    <button type="submit" class="btn btn-primary w-full">Ajouter</button>
+  </form>
+</div>

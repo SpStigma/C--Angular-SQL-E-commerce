@@ -57,7 +57,7 @@ namespace server.Controllers
                 new Claim(JwtRegisteredClaimNames.Sub, user.Username ?? string.Empty),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, user.Role ?? "user")
+                new Claim("role", user.Role ?? "user")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key!));

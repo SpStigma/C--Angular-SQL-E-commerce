@@ -34,7 +34,7 @@ namespace server.Controllers
                 Description = productDto.Description,
                 Price = productDto.Price,
                 Stock = productDto.Stock,
-                ImageUrl = productDto.ImageUrl // ← ajout ici
+                ImageUrl = productDto.ImageUrl
             };
 
             _context.Products.Add(product);
@@ -122,6 +122,20 @@ namespace server.Controllers
             var imageUrl = $"{baseUrl}/Uploads/{fileName}";
 
             return Ok(new { imageUrl });
+        }
+        
+        [Authorize(Roles = "admin")]
+        [HttpPut("{id}/stock")]
+        public async Task<IActionResult> UpdateStock(int id, [FromBody] int amountToAdd)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+                return NotFound(new { message = "Produit introuvable" });
+
+            product.Stock += amountToAdd;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Stock mis à jour", stock = product.Stock });
         }
 
     }

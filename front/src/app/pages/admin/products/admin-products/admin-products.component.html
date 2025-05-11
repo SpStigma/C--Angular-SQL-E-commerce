@@ -1,1 +1,30 @@
-<p>admin-products works!</p>
+<h2 class="text-2xl font-bold text-center my-6">Gestion des produits</h2>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 px-6">
+  <div *ngFor="let product of products" class="card bg-base-100 shadow-xl">
+    <figure>
+      <img [src]="product.image || 'https://via.placeholder.com/300x200?text=Image+produit'" alt="Image produit" class="w-full h-48 object-cover">
+    </figure>
+    <div class="card-body">
+      <h3 class="text-lg font-bold">{{ product.name }}</h3>
+      <p>{{ product.description }}</p>
+      <p class="font-semibold">Prix : {{ product.price }} €</p>
+      <p class="text-sm text-gray-500">Stock actuel : {{ product.stock }}</p>
+
+      <!-- Formulaire d'ajout de stock -->
+      <div class="flex items-center gap-2 mt-2">
+        <input type="number" [(ngModel)]="stockToAdd[product.id]" min="0" class="input input-sm input-bordered w-full" />
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-between mt-4">
+        <button (click)="addStock(product.id)" class="btn btn-sm btn-success">
+          Ajouter
+        </button>
+        <button (click)="deleteProduct(product.id)" class="btn btn-sm btn-error">
+          🗑 Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

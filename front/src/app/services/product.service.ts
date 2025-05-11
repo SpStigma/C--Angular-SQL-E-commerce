@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Product {
@@ -8,8 +8,8 @@ export interface Product {
   description: string;
   price: number;
   stock: number;
-  imageUrl: string;
-  soldCount: number;
+  image?: string;
+  soldCount?: number;
 }
 
 @Injectable({
@@ -23,4 +23,23 @@ export class ProductService {
   getAll(): Observable<Product[]> {
     return this.http.get<Product[]>(this.apiUrl);
   }
+
+  addStock(id: number, quantity: number) {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    return this.http.put(`${this.apiUrl}/${id}/stock`, quantity, { headers });
+  }
+
+delete(id: number) {
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+
+    return this.http.delete(`${this.apiUrl}/${id}`, { headers });
+  }
 }
+

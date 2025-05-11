@@ -3,12 +3,17 @@
   <div class="flex-1">
     <a class="btn btn-ghost text-xl">VenteConsole</a>
   </div>
+
   <div class="flex-none">
-    <ng-container *ngIf="isAdmin; else guestLinks">
-      <div class="dropdown dropdown-end">
-        <label tabindex="0" class="btn btn-ghost">{{ username }}</label>
-        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-          <li><a routerLink="/admin">Dashboard</a></li>
+    <ng-container *ngIf="username; else guestLinks">
+      <div class="dropdown dropdown-end w-fit">
+        <label tabindex="0" class="btn btn-ghost w-full">
+          {{ username }}
+        </label>
+        <ul class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-auto min-w-[10rem]"
+            tabindex="0">
+          <li><a routerLink="/orders">Mes commandes</a></li>
+          <li *ngIf="isAdmin"><a routerLink="/admin">Dashboard</a></li>
           <li><a (click)="logout()">Logout</a></li>
         </ul>
       </div>
@@ -49,7 +54,7 @@
 <!-- Grille de cartes produit -->
 <div class="py-10 px-4 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
   <div class="card bg-base-100 shadow-xl" *ngFor="let product of products">
-    <figure><img [src]="product.imageUrl" alt="product image" class="h-48 w-full object-cover" /></figure>
+    <figure><img [src]="product.image" alt="product image" class="h-48 w-full object-cover" /></figure>
     <div class="card-body">
       <h2 class="card-title">{{ product.name }}</h2>
       <p>{{ product.description }}</p>
