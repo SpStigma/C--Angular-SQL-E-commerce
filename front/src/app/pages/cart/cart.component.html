@@ -1,1 +1,49 @@
-<p>cart works!</p>
+<div class="flex flex-col items-center justify-center min-h-screen px-6 py-8">
+  <!-- Titre légèrement descendu -->
+  <h2 class="mt-8 text-3xl font-bold mb-6 text-center">🛒 Mon Panier</h2>
+
+  <!-- Conteneur du tableau -->
+  <div class="overflow-x-auto w-4/5 border border-base-300 rounded-lg overflow-hidden">
+    <table class="table table-zebra table-compact w-full">
+      <thead>
+        <tr class="bg-primary text-primary-content">
+          <th>Produit</th>
+          <th class="text-center">Quantité</th>
+          <th class="text-right">Prix unitaire</th>
+          <th class="text-right">Sous-total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items">
+          <td class="px-4 py-2">{{ item.name }}</td>
+          <td class="px-4 py-2 text-center">{{ item.quantity }}</td>
+          <td class="px-4 py-2 text-right">€{{ item.price.toFixed(2) }}</td>
+          <td class="px-4 py-2 text-right">
+            €{{ (item.price * item.quantity).toFixed(2) }}
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="bg-secondary text-secondary-content">
+          <td colspan="3" class="text-left font-bold px-4 py-2">Total</td>
+          <td class="text-right font-bold px-4 py-2">
+            €{{ total.toFixed(2) }}
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Boutons en dessous du tableau, mêmes largeur et centrés -->
+  <div class="w-4/5 mt-6 flex justify-end gap-4">
+    <button class="btn btn-outline" (click)="clearCart()">
+      Vider le panier
+    </button>
+    <button class="btn btn-outline" routerLink="/">
+      Continuer mes achats
+    </button>
+    <button class="btn btn-primary">
+      Passer à la caisse
+    </button>
+  </div>
+</div>

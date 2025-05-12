@@ -20,22 +20,45 @@ namespace server.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetCart()
+    [HttpGet]
+    public async Task<IActionResult> GetCart()
+    {
+        var userId = GetUserId();
+        if (userId == null) return Unauthorized();
+
+        var cart = await _context.Carts
+            .Include(c => c.Items)
+            .ThenInclude(i => i.Product)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        if (cart == null || !cart.Items.Any())
         {
-            var userId = GetUserId();
-            if (userId == null) return Unauthorized();
-
-            var cart = await _context.Carts
-                .Include(c => c.Items)
-                .ThenInclude(i => i.Product)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
-
-            if (cart == null)
-                return Ok(new { message = "Panier vide", items = new List<CartItem>() });
-
-            return Ok(cart);
+            return Ok(new
+            {
+                items     = new List<object>(),
+                total     = 0m,
+                itemCount = 0
+            });
         }
+
+        var items = cart.Items.Select(i => new
+        {
+            productId = i.ProductId,
+            name      = i.Product?.Name,
+            price     = i.Product?.Price,
+            quantity  = i.Quantity
+        }).ToList();
+
+        var total = items.Sum(i => i.price * i.quantity);
+        var itemCount = items.Sum(i => i.quantity);
+
+        return Ok(new
+        {
+            items,
+            total,
+            itemCount
+        });
+    }
 
         [Authorize]
         [HttpPost("add")]

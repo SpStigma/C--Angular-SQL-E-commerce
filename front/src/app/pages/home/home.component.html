@@ -1,67 +1,117 @@
-<!-- Navbar -->
-<div class="navbar bg-base-100 shadow-md">
+<div class="navbar bg-base-100 shadow-md mb-8">
   <div class="flex-1">
     <a class="btn btn-ghost text-xl">VenteConsole</a>
   </div>
+  <div class="flex-none flex items-center space-x-4">
+    <button
+      class="btn btn-ghost indicator"
+      (click)="router.navigate(['/cart'])"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m5-9v9m4-9v9m4-9l2 9"/>
+      </svg>
+      <span
+        *ngIf="cartItemCount > 0"
+        class="badge badge-xs badge-primary indicator-item"
+      >
+        {{ cartItemCount }}
+      </span>
+    </button>
 
-  <div class="flex-none">
     <ng-container *ngIf="username; else guestLinks">
-      <div class="dropdown dropdown-end w-fit">
-        <label tabindex="0" class="btn btn-ghost w-full">
+      <div class="dropdown dropdown-end">
+        <label tabindex="0" class="btn btn-ghost">
           {{ username }}
         </label>
-        <ul class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-auto min-w-[10rem]"
-            tabindex="0">
+        <ul tabindex="0"
+            class="menu menu-sm dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-48">
+          <li><a routerLink="/cart">Panier</a></li>
           <li><a routerLink="/orders">Mes commandes</a></li>
           <li *ngIf="isAdmin"><a routerLink="/admin">Dashboard</a></li>
-          <li><a (click)="logout()">Logout</a></li>
+          <li><a (click)="logout()">Déconnexion</a></li>
         </ul>
       </div>
     </ng-container>
 
     <ng-template #guestLinks>
-      <a routerLink="/login" class="btn btn-primary">Login / Register</a>
+      <a class="btn btn-ghost" routerLink="/login">Connexion</a>
+      <a class="btn btn-ghost" routerLink="/register">Inscription</a>
     </ng-template>
   </div>
 </div>
 
-
-<!-- Carrousel -->
-<div class="carousel w-full mt-6">
-  <div id="slide1" class="carousel-item relative w-full">
-    <img src="https://picsum.photos/seed/console1/800/300" class="w-full object-cover rounded-xl" />
-    <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-      <a href="#slide3" class="btn btn-circle">❮</a>
-      <a href="#slide2" class="btn btn-circle">❯</a>
-    </div>
+<!-- Toasts d’alerte en haut à droite -->
+<div class="fixed top-4 right-4 space-y-2 z-50">
+  <div *ngIf="successMessage" class="alert alert-success shadow-lg">
+    <span>{{ successMessage }}</span>
   </div>
-  <div id="slide2" class="carousel-item relative w-full">
-    <img src="https://picsum.photos/seed/console2/800/300" class="w-full object-cover rounded-xl" />
-    <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-      <a href="#slide1" class="btn btn-circle">❮</a>
-      <a href="#slide3" class="btn btn-circle">❯</a>
-    </div>
-  </div>
-  <div id="slide3" class="carousel-item relative w-full">
-    <img src="https://picsum.photos/seed/console3/800/300" class="w-full object-cover rounded-xl" />
-    <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-      <a href="#slide2" class="btn btn-circle">❮</a>
-      <a href="#slide1" class="btn btn-circle">❯</a>
-    </div>
+  <div *ngIf="errorMessage" class="alert alert-error shadow-lg">
+    <span>{{ errorMessage }}</span>
   </div>
 </div>
 
-<!-- Grille de cartes produit -->
-<div class="py-10 px-4 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-  <div class="card bg-base-100 shadow-xl" *ngFor="let product of products">
-    <figure><img [src]="product.image" alt="product image" class="h-48 w-full object-cover" /></figure>
-    <div class="card-body">
-      <h2 class="card-title">{{ product.name }}</h2>
-      <p>{{ product.description }}</p>
-      <div class="card-actions justify-between items-center">
-        <span class="text-lg font-bold">{{ product.price }} €</span>
-        <button class="btn btn-sm btn-accent">Voir</button>
+<div class="px-4 space-y-12">
+  <!-- Carousel -->
+  <div class="carousel w-full h-[50vh] rounded-lg overflow-hidden mb-12">
+    <ng-container *ngFor="let product of carouselProducts; let i = index">
+      <div id="slide{{ i }}" class="carousel-item relative w-full h-full">
+        <img [src]="product.imageUrl"
+             [alt]="product.name"
+             class="w-full h-full object-contain object-center" />
+        <div class="absolute bottom-4 left-8 bg-black bg-opacity-50 text-white px-4 py-2 rounded">
+          {{ product.name }}
+        </div>
+        <div class="absolute inset-y-1/2 left-4 right-4 flex justify-between items-center">
+          <a [href]="'#slide' + ((i - 1 + carouselProducts.length) % carouselProducts.length)"
+             class="btn btn-circle">❮</a>
+          <a [href]="'#slide' + ((i + 1) % carouselProducts.length)"
+             class="btn btn-circle">❯</a>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Mes Produits -->
+  <h2 class="text-2xl font-bold mb-6">Mes Produits</h2>
+  <div class="grid gap-8 grid-cols-1 md:grid-cols-3 mb-8">
+    <div *ngFor="let product of paginatedProducts"
+         class="card bg-base-100 shadow-xl flex flex-col">
+      <figure class="w-full aspect-[4/3] overflow-hidden rounded-t-lg">
+        <img [src]="product.imageUrl"
+             [alt]="product.name"
+             class="w-full h-full object-cover" />
+      </figure>
+      <div class="card-body flex flex-col flex-1">
+        <h2 class="card-title">{{ product.name }}</h2>
+        <p class="flex-1">{{ product.description }}</p>
+        <div class="mb-2">
+          <span class="badge badge-secondary">Stock : {{ product.stock }}</span>
+        </div>
+        <div class="card-actions justify-between items-center mt-4">
+          <span class="text-lg font-bold">€{{ product.price }}</span>
+          <button class="btn btn-sm btn-primary" (click)="addToCart(product)">
+            🛒 Ajouter au panier
+          </button>
+        </div>
       </div>
     </div>
   </div>
+
+  <nav *ngIf="pages.length > 1" class="flex justify-center space-x-2">
+    <button class="btn btn-sm" (click)="prevPage()" [disabled]="currentPage === 1">
+      Préc
+    </button>
+    <ng-container *ngFor="let p of pages">
+      <button class="btn btn-sm"
+              [ngClass]="{ 'btn-primary': currentPage === p, 'btn-outline': currentPage !== p }"
+              (click)="goToPage(p)">
+        {{ p }}
+      </button>
+    </ng-container>
+    <button class="btn btn-sm" (click)="nextPage()" [disabled]="currentPage === pages.length">
+      Suiv
+    </button>
+  </nav>
 </div>
