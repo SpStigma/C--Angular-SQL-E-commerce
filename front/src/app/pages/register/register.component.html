@@ -1,1 +1,104 @@
-<p>register works!</p>
+<div class="min-h-screen flex items-center justify-center bg-base-100 px-4">
+  <!-- toast de succès -->
+  <div *ngIf="showSuccess" class="toast toast-top toast-center z-50">
+    <div class="alert alert-success shadow-lg">
+      <span>Inscription réussie !</span>
+    </div>
+  </div>
+
+  <div class="card w-full max-w-md bg-base-300 shadow-xl">
+    <div class="card-body space-y-6">
+      <h2 class="text-3xl font-bold text-center">Créer un compte</h2>
+
+      <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" class="space-y-5">
+        <!-- Username -->
+        <div class="form-control w-full">
+          <label class="label mb-1">
+            <span class="label-text font-medium">Nom d’utilisateur</span>
+          </label>
+          <input
+            [(ngModel)]="username"
+            name="username"
+            #usernameModel="ngModel"
+            type="text"
+            class="input input-bordered w-full"
+            required
+            minlength="3"
+          />
+          <p *ngIf="submitted && usernameModel.errors" class="text-error text-sm mt-1">
+            <span *ngIf="usernameModel.errors['required']">Le nom d’utilisateur est requis.</span>
+            <span *ngIf="usernameModel.errors['minlength']">Au moins 3 caractères.</span>
+          </p>
+        </div>
+
+        <!-- Email -->
+        <div class="form-control w-full">
+          <label class="label mb-1">
+            <span class="label-text font-medium">Email</span>
+          </label>
+          <input
+            [(ngModel)]="email"
+            name="email"
+            #emailModel="ngModel"
+            type="email"
+            class="input input-bordered w-full"
+            required
+            email
+          />
+          <p *ngIf="submitted && emailModel.errors" class="text-error text-sm mt-1">
+            <span *ngIf="emailModel.errors['required']">L’email est requis.</span>
+            <span *ngIf="emailModel.errors['email']">Format invalide.</span>
+          </p>
+        </div>
+
+        <!-- Password -->
+        <div class="form-control w-full">
+          <label class="label mb-1">
+            <span class="label-text font-medium">Mot de passe</span>
+          </label>
+          <input
+            [(ngModel)]="password"
+            name="password"
+            #passwordModel="ngModel"
+            type="password"
+            class="input input-bordered w-full"
+            required
+            minlength="6"
+          />
+          <p *ngIf="submitted && passwordModel.errors" class="text-error text-sm mt-1">
+            <span *ngIf="passwordModel.errors['required']">Le mot de passe est requis.</span>
+            <span *ngIf="passwordModel.errors['minlength']">Au moins 6 caractères.</span>
+          </p>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-control w-full">
+          <label class="label mb-1">
+            <span class="label-text font-medium">Confirmer le mot de passe</span>
+          </label>
+          <input
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            #confirmModel="ngModel"
+            type="password"
+            class="input input-bordered w-full"
+            required
+          />
+        </div>
+
+        <!-- Erreur globale -->
+        <p *ngIf="errorMessage" class="text-error text-center">{{ errorMessage }}</p>
+
+        <!-- Bouton -->
+        <div class="form-control mt-4">
+          <button type="submit" class="btn btn-primary w-full">S’inscrire</button>
+        </div>
+      </form>
+
+      <div class="text-center">
+        <span class="text-sm text-gray-500">Déjà un compte ?</span>
+        <a routerLink="/login" class="link link-primary ml-1">Se connecter</a>
+      </div>
+    </div>
+  </div>
+</div>
