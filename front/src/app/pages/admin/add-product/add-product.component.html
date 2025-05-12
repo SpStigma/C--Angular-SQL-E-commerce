@@ -1,14 +1,102 @@
-<div class="max-w-md mx-auto p-6 bg-white rounded shadow">
-  <h2 class="text-xl font-bold mb-4">Ajouter un produit</h2>
-  <form (ngSubmit)="onSubmit()" #productForm="ngForm">
-    <input [(ngModel)]="product.name" name="name" class="input input-bordered w-full mb-2" placeholder="Nom" required />
-    <input [(ngModel)]="product.description" name="description" class="input input-bordered w-full mb-2" placeholder="Description" required />
-    <input type="number" [(ngModel)]="product.price" name="price" class="input input-bordered w-full mb-2" placeholder="Prix" required />
-    <input type="number" [(ngModel)]="product.stock" name="stock" class="input input-bordered w-full mb-4" placeholder="Stock" required />
+<div class="flex justify-center mt-10">
+  <div class="card w-full max-w-2xl shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title justify-center text-2xl">Ajouter un produit</h2>
 
-    <!-- pour l'image -->
-    <input type="file" (change)="onFileSelected($event)" class="file-input file-input-bordered w-full mb-4" />
+      <form (ngSubmit)="onSubmit()" #productForm="ngForm" class="grid grid-cols-1 gap-6">
+        <!-- Nom -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Nom du produit</span>
+          </label>
+          <input 
+            type="text" 
+            placeholder="Entrez le nom" 
+            class="input input-bordered w-full" 
+            [(ngModel)]="product.name" 
+            name="name" 
+            required
+          />
+        </div>
 
-    <button type="submit" class="btn btn-primary w-full">Ajouter</button>
-  </form>
+        <!-- Description -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Description</span>
+          </label>
+          <textarea 
+            placeholder="Entrez la description" 
+            class="textarea textarea-bordered w-full" 
+            [(ngModel)]="product.description" 
+            name="description" 
+            required
+          ></textarea>
+        </div>
+
+        <!-- Prix & Stock côte à côte -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Prix (€)</span>
+            </label>
+            <input 
+              type="number" 
+              placeholder="0.00" 
+              class="input input-bordered w-full" 
+              [(ngModel)]="product.price" 
+              name="price" 
+              required
+            />
+          </div>
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Stock</span>
+            </label>
+            <input 
+              type="number" 
+              placeholder="0" 
+              class="input input-bordered w-full" 
+              [(ngModel)]="product.stock" 
+              name="stock" 
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Upload d'image -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Image</span>
+          </label>
+          <input 
+            type="file" 
+            class="file-input file-input-bordered w-full" 
+            (change)="onFileSelected($event)" 
+            accept="image/*"
+          />
+          <span *ngIf="uploadError" class="text-error mt-1">{{ uploadError }}</span>
+        </div>
+
+        <!-- Boutons symétriques -->
+        <div class="form-control mt-6 flex justify-between">
+          <button 
+            type="button" 
+            class="btn btn-outline btn-error w-1/2 mr-2"
+            (click)="router.navigate(['/admin/products'])"
+          >
+            Annuler
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary w-1/2 ml-2" 
+            [disabled]="productForm.invalid"
+          >
+            Créer
+          </button>
+        </div>
+
+        <div *ngIf="createError" class="text-error text-center mt-2">{{ createError }}</div>
+      </form>
+    </div>
+  </div>
 </div>

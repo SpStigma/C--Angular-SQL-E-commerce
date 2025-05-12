@@ -59,10 +59,23 @@ if (app.Environment.IsDevelopment())
 
 // app.UseHttpsRedirection();
 
+var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "Uploads");
+
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
 app.UseCors("AllowAngularApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
 
 app.MapControllers();
 
