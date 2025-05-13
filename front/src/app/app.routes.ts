@@ -1,4 +1,6 @@
-import { Routes } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
 import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
@@ -6,40 +8,63 @@ import { ProductsComponent } from './pages/products/products.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { OrdersComponent } from './pages/orders/orders.component';
 
+// ✅ CHEMIN RELATIF CORRECT vers ton guard
+import { AuthGuard } from './gards/auth.guard';
+
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'products', component: ProductsComponent },
-  { path: 'cart', component: CartComponent },
-  { path: 'orders', component: OrdersComponent },
 
-  // Admin dashboard root
+  // pages protégées
+  { path: 'cart', component: CartComponent, canActivate: [AuthGuard] },
+  { path: 'orders', component: OrdersComponent, canActivate: [AuthGuard] },
+
+  // section admin
   {
     path: 'admin',
-    loadComponent: () =>
-      import('./pages/admin/admin.component').then(m => m.AdminComponent)
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./pages/admin/admin.component').then(m => m.AdminComponent)
+      },
+      {
+        path: 'products',
+        loadComponent: () =>
+          import('./pages/admin/products/admin-products/admin-products.component')
+            .then(m => m.AdminProductsComponent)
+      },
+      {
+        path: 'orders',
+        loadComponent: () =>
+          import('./pages/admin/orders/admin-orders/admin-orders.component')
+            .then(m => m.AdminOrdersComponent)
+      },
+      {
+        path: 'users',
+        loadComponent: () =>
+          import('./pages/admin/users/admin-users/admin-users.component')
+            .then(m => m.AdminUsersComponent)
+      },
+      {
+        path: 'add-product',
+        loadComponent: () =>
+          import('./pages/admin/add-product/add-product.component')
+            .then(m => m.AddProductComponent)
+      }
+    ]
   },
 
-  {
-    path: 'admin/products',
-    loadComponent: () =>
-      import('./pages/admin/products/admin-products/admin-products.component').then(m => m.AdminProductsComponent)
-  },
-  {
-    path: 'admin/orders',
-    loadComponent: () =>
-      import('./pages/admin/orders/admin-orders/admin-orders.component').then(m => m.AdminOrdersComponent)
-  },
-  {
-    path: 'admin/users',
-    loadComponent: () =>
-      import('./pages/admin/users/admin-users/admin-users.component').then(m => m.AdminUsersComponent)
-  },
-  {
-    path: 'admin/add-product',
-    loadComponent: () =>
-      import('./pages/admin/add-product/add-product.component').then(m => m.AddProductComponent)
-  }
+  // fallback
+  { path: '**', redirectTo: 'home' }
 ];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule {}
