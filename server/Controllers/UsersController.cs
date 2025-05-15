@@ -156,10 +156,12 @@ namespace server.Controllers
         }
 
         [HttpGet("all")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = await _context.Users
+                .Select(u => new UserDto { Username = u.Username, Email = u.Email, Role = u.Role })
+                .ToListAsync();
             return Ok(users);
         }
     }

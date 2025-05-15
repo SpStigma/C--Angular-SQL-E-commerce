@@ -15,5 +15,9 @@ namespace server.Dtos
         [Required]
         [MinLength(6)]
         public string? Password { get; set; }
+
+        [Required]
+        [MinLength(3)]
+        public string Role { get; set; } = String.Empty;
     }
 }

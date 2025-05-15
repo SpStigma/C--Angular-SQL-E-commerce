@@ -1,29 +1,50 @@
 <div class="admin-users-container p-4 flex flex-col items-center w-full">
   <h2 class="text-3xl font-bold mb-4">Tous les utilisateurs</h2>
   <div *ngIf="loading" class="animate-pulse text-center">Chargement...</div>
-  <div *ngIf="errorMessage" class="alert alert-error mb-4 w-full max-w-5xl">{{ errorMessage }}</div>
-  <div *ngIf="!loading && users.length > 0" class="overflow-x-auto w-full">
-    <table class="table table-zebra w-full max-w-5xl mx-auto">
+  <div *ngIf="errorMessage" class="alert alert-error mb-4 w-full">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="alert alert-success mb-4 w-full">{{ successMessage }}</div>
+
+  <div *ngIf="!loading" class="overflow-x-auto w-full">
+    <table class="table table-zebra w-full table-fixed">
       <thead>
         <tr>
           <th>ID</th>
+          <th>
+            <div class="flex flex-col">
+              <span>Username</span>
+              <input
+                type="text"
+                [(ngModel)]="searchTerm"
+                (ngModelChange)="onSearchChange()"
+                placeholder="Rechercher..."
+                class="input input-bordered input-sm w-full mt-2"
+              />
+            </div>
+          </th>
           <th>Email</th>
           <th>Rôle</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of users">
+        <tr *ngFor="let user of filteredUsers">
           <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
           <td>{{ user.email }}</td>
           <td>
-            <span [ngClass]="{
-              'badge badge-success': user.status === 'admin',
-              'badge badge-secondary': user.status === 'user'
-            }">{{ user.status }}</span>
+            <select
+              [(ngModel)]="user.role"
+              (change)="onRoleChange(user)"
+              class="select select-sm"
+            >
+              <option value="user">user</option>
+              <option value="admin">admin</option>
+            </select>
           </td>
+        </tr>
+        <tr *ngIf="filteredUsers.length === 0">
+          <td colspan="4" class="text-center">Aucun utilisateur trouvé.</td>
         </tr>
       </tbody>
     </table>
   </div>
-  <div *ngIf="!loading && users.length === 0" class="text-center mt-4 w-full max-w-5xl">Aucun utilisateur trouvé.</div>
 </div>
