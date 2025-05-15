@@ -7,6 +7,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { ProductsComponent } from './pages/products/products.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { OrdersComponent } from './pages/orders/orders.component';
+import { AdminOrdersComponent } from './pages/admin/orders/admin-orders/admin-orders.component';
 
 // ✅ CHEMIN RELATIF CORRECT vers ton guard
 import { AuthGuard } from './gards/auth.guard';

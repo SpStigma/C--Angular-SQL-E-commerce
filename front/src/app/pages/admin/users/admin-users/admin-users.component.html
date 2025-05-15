@@ -1,1 +1,29 @@
-<p>admin-users works!</p>
+<div class="admin-users-container p-4 flex flex-col items-center w-full">
+  <h2 class="text-3xl font-bold mb-4">Tous les utilisateurs</h2>
+  <div *ngIf="loading" class="animate-pulse text-center">Chargement...</div>
+  <div *ngIf="errorMessage" class="alert alert-error mb-4 w-full max-w-5xl">{{ errorMessage }}</div>
+  <div *ngIf="!loading && users.length > 0" class="overflow-x-auto w-full">
+    <table class="table table-zebra w-full max-w-5xl mx-auto">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Rôle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.id }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span [ngClass]="{
+              'badge badge-success': user.status === 'admin',
+              'badge badge-secondary': user.status === 'user'
+            }">{{ user.status }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div *ngIf="!loading && users.length === 0" class="text-center mt-4 w-full max-w-5xl">Aucun utilisateur trouvé.</div>
+</div>

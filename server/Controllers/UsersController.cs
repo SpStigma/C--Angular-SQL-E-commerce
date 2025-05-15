@@ -154,5 +154,13 @@ namespace server.Controllers
 
             return Ok(new { message = $"Rôle de {user.Username} mis à jour en {newRole}" });
         }
+
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+        {
+            var users = await _context.Users.ToListAsync();
+            return Ok(users);
+        }
     }
 }

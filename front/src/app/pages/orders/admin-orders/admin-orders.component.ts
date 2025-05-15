@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { OrderService } from '../../services/order.service';
-import { Order } from '../../models/order.model';
+import { OrderService } from '../../../services/order.service';
+import { Order } from '../../../models/order.model';
 
 @Component({
-  selector: 'app-orders',
+  selector: 'app-admin-orders',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './orders.component.html',
-  styleUrls: ['./orders.component.css']
+  templateUrl: './admin-orders.component.html',
+  styleUrls: ['./admin-orders.component.css']
 })
-export class OrdersComponent implements OnInit {
+export class AdminOrdersComponent implements OnInit {
   orders: Order[] = [];
   loading = false;
   errorMessage: string | null = null;
@@ -19,18 +19,18 @@ export class OrdersComponent implements OnInit {
   constructor(private orderService: OrderService) {}
 
   ngOnInit(): void {
-    this.fetchOrders();
+    this.fetchAllOrders();
   }
 
-  private fetchOrders(): void {
+  private fetchAllOrders(): void {
     this.loading = true;
-    this.orderService.getOrders().subscribe({
+    this.orderService.getAllOrders().subscribe({
       next: (data) => {
         this.orders = data;
         this.loading = false;
       },
       error: (err) => {
-        this.errorMessage = err.message;
+        this.errorMessage = err.message || 'Erreur lors du chargement';
         this.loading = false;
       }
     });
