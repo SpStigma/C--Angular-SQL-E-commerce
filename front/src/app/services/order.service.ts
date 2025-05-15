@@ -19,7 +19,8 @@ export class OrderService {
 
   /** Récupère toutes les commandes (admin) */
   getAllOrders(): Observable<Order[]> {
-    return this.http.get<Order[]>(`${this.apiUrl}/all`);
+    // avant : return this.http.get<Order[]>(`${this.baseUrl}/orders/all`);
+    return this.http.get<Order[]>(`${this.apiUrl}`);
   }
 
   /** Récupère une commande par son ID */
