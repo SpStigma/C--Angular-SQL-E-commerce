@@ -26,7 +26,7 @@ namespace server.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserDto userDto)
+        public async Task<IActionResult> Register(RegisterDto userDto)
         {
             var user = new User
             {
@@ -43,7 +43,7 @@ namespace server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserDto userDto)
+        public async Task<IActionResult> Login(LoginDto userDto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == userDto.Username);
 

@@ -22,7 +22,6 @@ export class LoginComponent {
   onSubmit() {
     const user = {
       username: this.username,
-      email: this.email,
       password: this.password
     };
 

@@ -7,10 +7,10 @@ import { RegisterComponent } from './pages/register/register.component';
 import { ProductsComponent } from './pages/products/products.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { OrdersComponent } from './pages/orders/orders.component';
-import { AdminOrdersComponent } from './pages/admin/orders/admin-orders/admin-orders.component';
 
-// ✅ CHEMIN RELATIF CORRECT vers ton guard
+// Guards
 import { AuthGuard } from './gards/auth.guard';
+import { AdminGuard } from './gards/admin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -19,14 +19,22 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'products', component: ProductsComponent },
 
-  // pages protégées
-  { path: 'cart', component: CartComponent, canActivate: [AuthGuard] },
-  { path: 'orders', component: OrdersComponent, canActivate: [AuthGuard] },
+  // Routes protégées (utilisateur connecté)
+  {
+    path: 'cart',
+    component: CartComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'orders',
+    component: OrdersComponent,
+    canActivate: [AuthGuard]
+  },
 
-  // section admin
+  // Section admin (seulement pour les admins)
   {
     path: 'admin',
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, AdminGuard],
     children: [
       {
         path: '',
@@ -60,7 +68,7 @@ export const routes: Routes = [
     ]
   },
 
-  // fallback
+  // Fallback
   { path: '**', redirectTo: 'home' }
 ];
 
