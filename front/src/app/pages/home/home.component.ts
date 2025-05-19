@@ -133,12 +133,12 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  viewProduct(id: number): void {
-    this.router.navigate(['/products', id]);
-  }
-
   private clearMessages(): void {
     this.successMessage = null;
     this.errorMessage = null;
+  }
+
+  viewProduct(product: Product): void {
+    this.router.navigate(['/product', product.id]);
   }
 }

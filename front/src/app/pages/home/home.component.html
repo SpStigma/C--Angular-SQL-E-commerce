@@ -90,7 +90,11 @@
           <span class="badge badge-secondary">Stock : {{ product.stock }}</span>
         </div>
         <div class="card-actions justify-between items-center mt-4">
-          <span class="text-lg font-bold">€{{ product.price }}</span>
+        <span class="text-lg font-bold">€{{ product.price }}</span>
+        <div class="flex items-center space-x-2">
+          <button class="btn btn-sm btn-secondary" (click)="viewProduct(product)">
+            🔍 Détails
+          </button>
           <button class="btn btn-sm btn-primary" (click)="addToCart(product)">
             🛒 Ajouter au panier
           </button>
