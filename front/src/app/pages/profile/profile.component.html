@@ -1,0 +1,108 @@
+<div class="min-h-screen flex items-center justify-center bg-base-200 p-4">
+  <div class="card w-full max-w-md shadow-xl bg-base-100">
+    <div class="card-body">
+
+      <h2 class="card-title text-2xl font-bold mb-4">Mon Profil</h2>
+
+      <!-- Messages succès / erreur -->
+      <div *ngIf="message" class="alert alert-success mb-4">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+               viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+               d="M5 13l4 4L19 7"/></svg>
+          <span>{{ message }}</span>
+        </div>
+      </div>
+      <div *ngIf="error" class="alert alert-error mb-4">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+               viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+               d="M6 18L18 6M6 6l12 12"/></svg>
+          <span>{{ error }}</span>
+        </div>
+      </div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="onSave()">
+        <!-- Username -->
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Nom d’utilisateur</span>
+          </label>
+          <input
+            type="text"
+            formControlName="username"
+            [placeholder]="placeholderUsername || 'Nom d’utilisateur'"
+            class="input input-bordered w-full"
+          />
+          <p
+            *ngIf="profileForm.get('username')?.invalid && profileForm.get('username')?.touched"
+            class="text-sm text-error mt-1"
+          >
+            Le nom d’utilisateur est requis.
+          </p>
+        </div>
+
+        <!-- Email -->
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Email</span>
+          </label>
+          <input
+            type="email"
+            formControlName="email"
+            [placeholder]="placeholderEmail || 'votre@mail.com'"
+            class="input input-bordered w-full"
+          />
+          <p
+            *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
+            class="text-sm text-error mt-1"
+          >
+            Email non valide.
+          </p>
+        </div>
+
+        <!-- Current Password -->
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Mot de passe actuel</span>
+          </label>
+          <input
+            type="password"
+            formControlName="currentPassword"
+            placeholder="••••••••"
+            class="input input-bordered w-full"
+          />
+        </div>
+
+        <!-- New Password -->
+        <div class="form-control mb-6">
+          <label class="label">
+            <span class="label-text">Nouveau mot de passe</span>
+          </label>
+          <input
+            type="password"
+            formControlName="newPassword"
+            placeholder="••••••••"
+            class="input input-bordered w-full"
+          />
+          <input
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Confirmez le mot de passe"
+            class="input input-bordered w-full mt-2"
+          />
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-between items-center">
+          <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid">
+            Sauvegarder
+          </button>
+          <button type="button" class="btn btn-outline btn-error" (click)="onDelete()">
+            Supprimer le compte
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

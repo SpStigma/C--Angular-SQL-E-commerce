@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule }            from '@angular/common';
-import { RouterModule, Router }    from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
 import { ProductService, Product } from '../../services/product.service';
-import { CartService }             from '../../services/cart.service';
-import { environment }             from '../../../environments/environment';
+import { CartService } from '../../services/cart.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -21,9 +21,9 @@ export class HomeComponent implements OnInit {
   currentPage = 1;
   isAdmin = false;
   username?: string;
+  isLoggedIn = false;
   cartItemCount = 0;
 
-  // toasts
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
@@ -36,7 +36,9 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.loadProducts();
     this.checkToken();
-    this.loadCartCount();
+    if (this.isLoggedIn) {
+      this.loadCartCount();
+    }
   }
 
   private loadProducts(): void {
@@ -94,14 +96,10 @@ export class HomeComponent implements OnInit {
       next: () => {
         this.clearMessages();
         this.successMessage = `“${product.name}” ajouté au panier !`;
-
-        // → ON RECHARGE LE PRODUIT POUR AVOIR LE STOCK À JOUR
         this.productService.getById(product.id).subscribe({
           next: fresh => product.stock = fresh.stock,
-          error: err => console.error('Impossible de rafraîchir le stock', err)
+          error: () => {}
         });
-
-        // on met aussi à jour le badge panier
         this.cartItemCount++;
         setTimeout(() => this.clearMessages(), 3000);
       },
@@ -112,10 +110,11 @@ export class HomeComponent implements OnInit {
       }
     });
   }
+
   private loadCartCount(): void {
     this.cartService.getCart().subscribe({
       next: data => this.cartItemCount = data.itemCount,
-      error: () => {}
+      error: () => this.cartItemCount = 0
     });
   }
 
@@ -125,6 +124,11 @@ export class HomeComponent implements OnInit {
       const payload = JSON.parse(atob(token.split('.')[1]));
       this.username = payload.sub;
       this.isAdmin = payload.role === 'admin';
+      this.isLoggedIn = true;
+    } else {
+      this.username = undefined;
+      this.isAdmin = false;
+      this.isLoggedIn = false;
     }
   }
 

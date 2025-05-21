@@ -8,6 +8,10 @@ import { ProductsComponent } from './pages/products/products.component';
 import { ProductDetailComponent } from './pages/product-detail/product-detail.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { OrdersComponent } from './pages/orders/orders.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { TermsComponent }   from './pages/terms/terms.component';
+import { PrivacyComponent } from './pages/privacy/privacy.component';
+import { CookiesComponent } from './pages/cookies/cookies.component';
 
 // Guards
 import { AuthGuard } from './gards/auth.guard';
@@ -20,6 +24,11 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'products', component: ProductsComponent },
   { path: 'product/:id', component: ProductDetailComponent },
+  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+  { path: 'terms', component: TermsComponent },
+  { path: 'privacy', component: PrivacyComponent },
+  { path: 'cookies', component: CookiesComponent },
+  { path: '**', redirectTo: 'home' },
 
   // Routes protégées (utilisateur connecté)
   {

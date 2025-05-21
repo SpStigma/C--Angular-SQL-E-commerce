@@ -164,5 +164,85 @@ namespace server.Controllers
                 .ToListAsync();
             return Ok(users);
         }
+
+        [HttpGet("profile")]
+        [Authorize]
+        public async Task<ActionResult<ProfileDto>> GetProfile()
+        {
+            // Ne récupérer que le claim dont la valeur est un int
+            var idClaim = User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .FirstOrDefault(c => int.TryParse(c.Value, out _));
+
+            if (idClaim == null)
+                return Unauthorized(new { message = "ID utilisateur introuvable dans le token" });
+
+            var userId = int.Parse(idClaim.Value);
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound();
+
+            return Ok(new ProfileDto {
+                Username = user.Username!,
+                Email    = user.Email!
+            });
+        }
+
+        [HttpPut("profile")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileDto dto)
+        {
+            // Même filtrage que dans GetProfile()
+            var idClaim = User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .FirstOrDefault(c => int.TryParse(c.Value, out _));
+
+            if (idClaim == null)
+                return Unauthorized(new { message = "ID utilisateur introuvable dans le token" });
+
+            var userId = int.Parse(idClaim.Value);
+            var user   = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound();
+
+            if (!string.IsNullOrEmpty(dto.Username))
+                user.Username = dto.Username;
+            if (!string.IsNullOrEmpty(dto.Email))
+                user.Email = dto.Email;
+            if (!string.IsNullOrEmpty(dto.NewPassword))
+            {
+                if (string.IsNullOrEmpty(dto.CurrentPassword) ||
+                    !BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
+                {
+                    return BadRequest(new { message = "Mot de passe actuel incorrect" });
+                }
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            }
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Profil mis à jour" });
+        }
+
+        [HttpDelete("profile")]
+        [Authorize]
+        public async Task<IActionResult> DeleteProfile()
+        {
+            // Même filtrage que dans GetProfile()
+            var idClaim = User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .FirstOrDefault(c => int.TryParse(c.Value, out _));
+
+            if (idClaim == null)
+                return Unauthorized(new { message = "ID utilisateur introuvable dans le token" });
+
+            var userId = int.Parse(idClaim.Value);
+            var user   = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound();
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Compte supprimé" });
+        }
     }
 }
