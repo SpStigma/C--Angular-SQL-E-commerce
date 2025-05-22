@@ -1,23 +1,80 @@
-<div class="flex flex-row p-6 space-x-8">
-  <!-- Image -->
-  <div class="w-1/2">
-    <img [src]="product.imageUrl" [alt]="product.name" class="w-full rounded-lg shadow" />
+<!-- Affiche uniquement si le produit est chargé -->
+<div *ngIf="product as p">
+
+  <!-- Titre principal -->
+  <h1 class="text-4xl font-bold text-center mb-12 text-primary">
+    {{ p.name }}
+  </h1>
+
+  <!-- Bloc principal : image + infos produit -->
+  <div class="max-w-screen-xl mx-auto bg-base-100 shadow-xl rounded-xl p-8 flex flex-col lg:flex-row gap-10 items-center min-h-[70vh]">
+
+    <!-- Image produit à gauche -->
+    <div class="lg:w-1/2 w-full flex justify-center">
+      <img
+        [src]="p.imageUrl"
+        [alt]="p.name"
+        class="rounded-lg w-full max-w-md object-contain aspect-[4/3] shadow-lg transition-transform duration-300 hover:scale-105" />
+    </div>
+
+    <!-- Infos produit à droite -->
+    <div class="lg:w-1/2 w-full space-y-6">
+      <table class="table w-full">
+        <tbody>
+          <tr>
+            <td class="font-bold text-lg w-32">Nom :</td>
+            <td>{{ p.name }}</td>
+          </tr>
+          <tr>
+            <td class="font-bold text-lg align-top">Description :</td>
+            <td>{{ p.description }}</td>
+          </tr>
+          <tr>
+            <td class="font-bold text-lg">Stock :</td>
+            <td>
+              <span class="badge" [ngClass]="p.stock > 0 ? 'badge-success' : 'badge-error'">
+                {{ p.stock > 0 ? 'En stock' : 'Rupture de stock' }}
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td class="font-bold text-lg">Prix :</td>
+            <td class="text-xl font-bold text-primary">€{{ p.price }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Boutons -->
+      <div class="flex flex-col sm:flex-row gap-4">
+        <button
+          class="btn btn-primary flex-1"
+          (click)="addToCart()"
+          [disabled]="p.stock === 0">
+          🛒 Ajouter au panier
+        </button>
+
+        <button class="btn btn-outline flex-1" routerLink="/home">
+          Home
+        </button>
+      </div>
+
+      <!-- Messages -->
+      <div *ngIf="successMessage" class="alert alert-success shadow z-50">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-error shadow z-50">
+        {{ errorMessage }}
+      </div>
+    </div>
   </div>
+</div>
 
-  <!-- Infos + actions -->
-  <div class="w-1/2 flex flex-col space-y-4">
-    <h1 class="text-2xl font-bold">{{ product.name }}</h1>
-    <p class="text-gray-700">{{ product.description }}</p>
-    <span class="text-lg">Stock : {{ product.stock }}</span>
-    <span class="text-xl font-semibold">€{{ product.price }}</span>
+<!-- Spinner de chargement -->
+<div *ngIf="!product && !errorMessage" class="flex justify-center items-center min-h-[50vh]">
+  <span class="loading loading-spinner loading-lg text-primary"></span>
+</div>
 
-    <!-- Bouton mis à jour -->
-    <button class="btn btn-primary w-1/3" (click)="addToCart()">
-      🛒 Ajouter au panier
-    </button>
-
-    <!-- Messages utilisateur -->
-    <div *ngIf="successMessage" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-50">{{ successMessage }}</div>
-    <p *ngIf="errorMessage"   class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-2 rounded shadow-lg z-50">{{ errorMessage }}</p>
-  </div>
+<!-- Message d'erreur si produit introuvable -->
+<div *ngIf="errorMessage && !product" class="text-center text-red-500 text-xl mt-12">
+  {{ errorMessage }}
 </div>
