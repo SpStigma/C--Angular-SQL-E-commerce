@@ -24,23 +24,14 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'products', component: ProductsComponent },
   { path: 'product/:id', component: ProductDetailComponent },
-  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
   { path: 'terms', component: TermsComponent },
   { path: 'privacy', component: PrivacyComponent },
   { path: 'cookies', component: CookiesComponent },
-  { path: '**', redirectTo: 'home' },
-
+  { path: 'cart', component: CartComponent, canActivate: [AuthGuard] },
+  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+  { path: 'orders', component: OrdersComponent, canActivate: [AuthGuard] },
+  
   // Routes protégées (utilisateur connecté)
-  {
-    path: 'cart',
-    component: CartComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'orders',
-    component: OrdersComponent,
-    canActivate: [AuthGuard]
-  },
 
   // Section admin (seulement pour les admins)
   {
