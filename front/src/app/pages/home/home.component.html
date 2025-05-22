@@ -3,10 +3,11 @@
   <div class="flex-1">
     <a class="btn btn-ghost text-xl">VenteConsole</a>
   </div>
+
   <div class="flex-none flex items-center space-x-4">
+    <!-- Panier -->
     <button class="btn btn-ghost indicator" (click)="router.navigate(['/cart'])">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m5-9v9m4-9v9m4-9l2 9"/>
       </svg>
@@ -15,6 +16,7 @@
       </span>
     </button>
 
+    <!-- Utilisateur connecté -->
     <ng-container *ngIf="username; else guestLinks">
       <div class="dropdown dropdown-end">
         <label tabindex="0" class="btn btn-ghost">
@@ -30,6 +32,7 @@
       </div>
     </ng-container>
 
+    <!-- Liens invité -->
     <ng-template #guestLinks>
       <a class="btn btn-ghost" routerLink="/login">Connexion</a>
       <a class="btn btn-ghost" routerLink="/register">Inscription</a>
@@ -49,67 +52,67 @@
 
 <!-- Page principale -->
 <div class="px-4 space-y-12">
-  <!-- Carousel -->
-  <div class="carousel w-full h-[50vh] rounded-lg overflow-hidden mb-12">
-    <ng-container *ngFor="let product of carouselProducts; let i = index">
-      <div id="slide{{ i }}" class="carousel-item relative w-full h-full">
-        <img [src]="product.imageUrl" [alt]="product.name" class="w-full h-full object-contain object-center" />
-        <div class="absolute bottom-4 left-8 bg-black bg-opacity-50 text-white px-4 py-2 rounded">
+
+  <!-- Carrousel auto-défilant horizontal -->
+  <div class="relative w-full h-[50vh] overflow-hidden rounded-lg shadow-lg bg-base-100 mb-12">
+    <div
+      #carouselContainer
+      class="flex transition-all duration-700 ease-in-out"
+      style="scroll-behavior: smooth; width: 100%; height: 100%; overflow-x: hidden;"
+    >
+      <div
+        *ngFor="let product of carouselProducts"
+        class="min-w-full h-full flex-shrink-0 flex items-center justify-center relative"
+      >
+        <img
+          [src]="product.imageUrl"
+          [alt]="product.name"
+          class="w-full h-full object-contain object-center"
+        />
+        <div class="absolute bottom-4 left-4 bg-black/60 text-white px-4 py-2 rounded-lg">
           {{ product.name }}
-        </div>
-        <div class="absolute inset-y-1/2 left-4 right-4 flex justify-between items-center">
-          <a [href]="'#slide' + ((i - 1 + carouselProducts.length) % carouselProducts.length)" class="btn btn-circle">❮</a>
-          <a [href]="'#slide' + ((i + 1) % carouselProducts.length)" class="btn btn-circle">❯</a>
-        </div>
-      </div>
-    </ng-container>
-  </div>
-
-  <!-- Liste des produits -->
-<h2 class="text-3xl font-bold mb-6 text-center">🎮 Nos Produits</h2>
-
-<!-- Grille responsive -->
-<div class="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-12">
-
-  <div *ngFor="let product of paginatedProducts"
-       class="card bg-base-100 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-    
-    <!-- Image produit -->
-    <figure class="w-full aspect-[4/3] overflow-hidden rounded-t-lg">
-      <img [src]="product.imageUrl"
-           [alt]="product.name"
-           class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
-    </figure>
-
-    <!-- Corps de la carte -->
-    <div class="card-body flex flex-col">
-      <h2 class="card-title text-lg font-semibold">
-        {{ product.name }}
-        <div class="badge"
-             [ngClass]="product.stock > 0 ? 'badge-success' : 'badge-error'">
-          {{ product.stock > 0 ? 'En stock' : 'Rupture' }}
-        </div>
-      </h2>
-
-      <p class="text-sm text-gray-500 flex-1">{{ product.description }}</p>
-
-      <div class="mt-4 flex items-center justify-between">
-        <span class="text-xl font-bold text-primary">€{{ product.price }}</span>
-
-        <div class="flex gap-2">
-          <button class="btn btn-sm btn-outline" (click)="viewProduct(product)">
-            🔍
-          </button>
-          <button class="btn btn-sm btn-primary" (click)="addToCart(product)">
-            🛒
-          </button>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-  <!-- Pagination centrée -->
+  <!-- 🛍 Liste des produits -->
+  <h2 class="text-3xl font-bold text-center mb-6">🎮 Nos Produits</h2>
+
+  <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-12">
+    <div *ngFor="let product of paginatedProducts"
+         class="card bg-base-100 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+
+      <!-- Image produit -->
+      <figure class="w-full aspect-[4/3] overflow-hidden rounded-t-lg">
+        <img [src]="product.imageUrl"
+             [alt]="product.name"
+             class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
+      </figure>
+
+      <!-- Infos -->
+      <div class="card-body flex flex-col">
+        <h2 class="card-title text-lg font-semibold">
+          {{ product.name }}
+          <div class="badge" [ngClass]="product.stock > 0 ? 'badge-success' : 'badge-error'">
+            {{ product.stock > 0 ? 'En stock' : 'Rupture' }}
+          </div>
+        </h2>
+
+        <p class="text-sm text-gray-500 flex-1">{{ product.description }}</p>
+
+        <div class="mt-4 flex items-center justify-between">
+          <span class="text-xl font-bold text-primary">€{{ product.price }}</span>
+          <div class="flex gap-2">
+            <button class="btn btn-sm btn-outline" (click)="viewProduct(product)">🔍</button>
+            <button class="btn btn-sm btn-primary" (click)="addToCart(product)">🛒</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📄 Pagination -->
   <div *ngIf="pages.length > 1" class="flex justify-center p-10">
     <nav class="flex space-x-2">
       <button class="btn btn-sm" (click)="prevPage()" [disabled]="currentPage === 1">Préc</button>
@@ -121,7 +124,7 @@
           {{ p }}
         </button>
       </ng-container>
-      <button class="btn btn-sm" (click)="nextPage()" [disabled]="currentPage === pages.length">Suiv</button>
+      <button class="btn btn-sm" (click)="nextPageBtn()" [disabled]="currentPage === pages.length">Suiv</button>
     </nav>
   </div>
 </div>

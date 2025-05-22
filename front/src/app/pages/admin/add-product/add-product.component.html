@@ -1,13 +1,19 @@
-<div class="flex justify-center mt-10">
-  <div class="card w-full max-w-2xl shadow-xl">
-    <div class="card-body">
-      <h2 class="card-title justify-center text-2xl">Ajouter un produit</h2>
+<div class="min-h-[85vh] flex items-center justify-center bg-base-200 px-4 py-12">
+  <div class="card w-full max-w-2xl shadow-2xl bg-base-100">
+    <div class="card-body space-y-6">
+      
+      <!-- Titre -->
+      <h2 class="card-title justify-center text-3xl text-primary">
+        Ajouter un produit
+      </h2>
 
+      <!-- Formulaire -->
       <form (ngSubmit)="onSubmit()" #productForm="ngForm" class="grid grid-cols-1 gap-6">
+
         <!-- Nom -->
         <div class="form-control">
           <label class="label">
-            <span class="label-text">Nom du produit</span>
+            <span class="label-text font-semibold">Nom du produit</span>
           </label>
           <input 
             type="text" 
@@ -15,29 +21,29 @@
             class="input input-bordered w-full" 
             [(ngModel)]="product.name" 
             name="name" 
-            required
+            required 
           />
         </div>
 
         <!-- Description -->
         <div class="form-control">
           <label class="label">
-            <span class="label-text">Description</span>
+            <span class="label-text font-semibold">Description</span>
           </label>
           <textarea 
             placeholder="Entrez la description" 
             class="textarea textarea-bordered w-full" 
             [(ngModel)]="product.description" 
             name="description" 
-            required
+            required 
           ></textarea>
         </div>
 
-        <!-- Prix & Stock côte à côte -->
-        <div class="grid grid-cols-2 gap-4">
+        <!-- Prix & Stock -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="form-control">
             <label class="label">
-              <span class="label-text">Prix (€)</span>
+              <span class="label-text font-semibold">Prix (€)</span>
             </label>
             <input 
               type="number" 
@@ -45,12 +51,12 @@
               class="input input-bordered w-full" 
               [(ngModel)]="product.price" 
               name="price" 
-              required
+              required 
             />
           </div>
           <div class="form-control">
             <label class="label">
-              <span class="label-text">Stock</span>
+              <span class="label-text font-semibold">Stock</span>
             </label>
             <input 
               type="number" 
@@ -58,7 +64,7 @@
               class="input input-bordered w-full" 
               [(ngModel)]="product.stock" 
               name="stock" 
-              required
+              required 
             />
           </div>
         </div>
@@ -66,36 +72,38 @@
         <!-- Upload d'image -->
         <div class="form-control">
           <label class="label">
-            <span class="label-text">Image</span>
+            <span class="label-text font-semibold">Image</span>
           </label>
           <input 
             type="file" 
             class="file-input file-input-bordered w-full" 
             (change)="onFileSelected($event)" 
-            accept="image/*"
+            accept="image/*" 
           />
           <span *ngIf="uploadError" class="text-error mt-1">{{ uploadError }}</span>
         </div>
 
-        <!-- Boutons symétriques -->
-        <div class="form-control mt-6 flex justify-between">
+        <!-- Boutons -->
+        <div class="flex flex-col sm:flex-row gap-4 pt-4">
           <button 
             type="button" 
-            class="btn btn-outline btn-error w-1/2 mr-2"
-            (click)="router.navigate(['/admin/products'])"
-          >
-            Annuler
+            class="btn btn-outline btn-error flex-1"
+            (click)="router.navigate(['/admin/products'])">
+            ❌ Annuler
           </button>
+
           <button 
             type="submit" 
-            class="btn btn-primary w-1/2 ml-2" 
-            [disabled]="productForm.invalid"
-          >
-            Créer
+            class="btn btn-primary flex-1"
+            [disabled]="productForm.invalid">
+            ✅ Créer
           </button>
         </div>
 
-        <div *ngIf="createError" class="text-error text-center mt-2">{{ createError }}</div>
+        <!-- Message d'erreur -->
+        <div *ngIf="createError" class="text-error text-center mt-2">
+          {{ createError }}
+        </div>
       </form>
     </div>
   </div>

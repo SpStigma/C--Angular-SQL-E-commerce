@@ -1,4 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { ProductService, Product } from '../../services/product.service';
@@ -12,7 +18,7 @@ import { environment } from '../../../environments/environment';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   products: Product[] = [];
   carouselProducts: Product[] = [];
   paginatedProducts: Product[] = [];
@@ -27,6 +33,10 @@ export class HomeComponent implements OnInit {
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
+  @ViewChild('carouselContainer', { static: true }) carouselContainer!: ElementRef;
+  currentCarouselIndex = 0;
+  autoScrollInterval: any;
+
   constructor(
     private productService: ProductService,
     private cartService: CartService,
@@ -38,6 +48,15 @@ export class HomeComponent implements OnInit {
     this.checkToken();
     if (this.isLoggedIn) {
       this.loadCartCount();
+    }
+
+    // Auto scroll toutes les 8 secondes
+    this.autoScrollInterval = setInterval(() => this.nextSlide(), 8000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.autoScrollInterval) {
+      clearInterval(this.autoScrollInterval);
     }
   }
 
@@ -52,9 +71,9 @@ export class HomeComponent implements OnInit {
         }
         return p;
       });
-      this.carouselProducts = [...this.products]
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 4);
+
+      // S'assurer qu'on a au moins 1 produit
+      this.carouselProducts = this.products.slice(0, 4);
       this.initPagination();
     });
   }
@@ -70,25 +89,22 @@ export class HomeComponent implements OnInit {
     this.paginatedProducts = this.products.slice(start, start + this.pageSize);
   }
 
-  prevPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.setPaginatedProducts();
-    }
+  nextSlide(): void {
+    if (!this.carouselProducts.length) return;
+
+    this.currentCarouselIndex = (this.currentCarouselIndex + 1) % this.carouselProducts.length;
+    this.scrollToSlide(this.currentCarouselIndex);
   }
 
-  nextPage(): void {
-    if (this.currentPage < this.pages.length) {
-      this.currentPage++;
-      this.setPaginatedProducts();
-    }
-  }
+  private scrollToSlide(index: number): void {
+    const container = this.carouselContainer?.nativeElement;
+    if (!container) return;
 
-  goToPage(page: number): void {
-    if (page >= 1 && page <= this.pages.length) {
-      this.currentPage = page;
-      this.setPaginatedProducts();
-    }
+    const slideWidth = container.offsetWidth;
+    container.scrollTo({
+      left: slideWidth * index,
+      behavior: 'smooth'
+    });
   }
 
   addToCart(product: Product): void {
@@ -125,10 +141,6 @@ export class HomeComponent implements OnInit {
       this.username = payload.sub;
       this.isAdmin = payload.role === 'admin';
       this.isLoggedIn = true;
-    } else {
-      this.username = undefined;
-      this.isAdmin = false;
-      this.isLoggedIn = false;
     }
   }
 
@@ -137,12 +149,31 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
+  viewProduct(product: Product): void {
+    this.router.navigate(['/product', product.id]);
+  }
+
   private clearMessages(): void {
     this.successMessage = null;
     this.errorMessage = null;
   }
 
-  viewProduct(product: Product): void {
-    this.router.navigate(['/product', product.id]);
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.setPaginatedProducts();
+    }
+  }
+
+  nextPageBtn(): void {
+    if (this.currentPage < this.pages.length) {
+      this.currentPage++;
+      this.setPaginatedProducts();
+    }
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+    this.setPaginatedProducts();
   }
 }

@@ -1,47 +1,62 @@
-<div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  <div *ngFor="let product of products" class="card bg-base-100 shadow-xl flex flex-col">
-    <figure class="w-full aspect-[16 / 9] overflow-hidden rounded-t-lg">
-      <img
-        [src]="product.imageUrl"
-        [alt]="product.name"
-        class="w-full h-full object-cover"
-      />
-    </figure>
+<div class="min-h-[80vh] bg-base-200 py-12 px-6">
+  <div class="max-w-screen-xl mx-auto">
+    <h1 class="text-3xl font-bold text-center mb-10 text-primary">
+      📦 Gestion des Produits
+    </h1>
 
-    <div class="card-body flex flex-col flex-1">
-      <h2 class="card-title">{{ product.name }}</h2>
-      <p class="flex-1">{{ product.description }}</p>
-      <div class="mb-4">
-        <span class="badge badge-primary mr-2">€{{ product.price }}</span>
-        <span class="badge badge-secondary">Stock: {{ product.stock }}</span>
-      </div>
+    <!-- Grille de produits -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div *ngFor="let product of products"
+           class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 flex flex-col">
 
-      <div class="form-control mb-4">
-        <label class="label">
-          <span class="label-text">Ajouter du stock</span>
-        </label>
-        <input
-          type="number"
-          min="1"
-          class="input input-bordered w-full"
-          [(ngModel)]="stockToAdd[product.id]"
-        />
-      </div>
+        <!-- Image -->
+        <figure class="w-full aspect-[16/9] overflow-hidden rounded-t-lg">
+          <img
+            [src]="product.imageUrl"
+            [alt]="product.name"
+            class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          />
+        </figure>
 
-      <div class="card-actions mt-auto w-full flex justify-between">
-        <button
-          class="btn btn-sm btn-outline btn-success flex-1 mr-2"
-          (click)="addStock(product.id)"
-          [disabled]="stockToAdd[product.id] <= 0"
-        >
-          + Stock
-        </button>
-        <button
-          class="btn btn-sm btn-outline btn-error flex-1 ml-2"
-          (click)="deleteProduct(product.id)"
-        >
-          Supprimer
-        </button>
+        <!-- Infos -->
+        <div class="card-body flex flex-col flex-1">
+          <h2 class="card-title text-lg font-semibold">{{ product.name }}</h2>
+          <p class="text-sm text-gray-600 flex-1">{{ product.description }}</p>
+
+          <!-- Badges -->
+          <div class="mb-4 flex flex-wrap gap-2">
+            <span class="badge badge-primary">€{{ product.price }}</span>
+            <span class="badge badge-secondary">Stock : {{ product.stock }}</span>
+          </div>
+
+          <!-- Ajout de stock -->
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">Ajouter du stock</span>
+            </label>
+            <input
+              type="number"
+              min="1"
+              class="input input-bordered w-full"
+              [(ngModel)]="stockToAdd[product.id]"
+            />
+          </div>
+
+          <!-- Actions -->
+          <div class="card-actions mt-auto flex gap-4">
+            <button
+              class="btn btn-sm btn-success w-full"
+              (click)="addStock(product.id)"
+              [disabled]="stockToAdd[product.id] <= 0">
+              ➕ Ajouter au stock
+            </button>
+            <button
+              class="btn btn-sm btn-error w-full"
+              (click)="deleteProduct(product.id)">
+              🗑 Supprimer
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
