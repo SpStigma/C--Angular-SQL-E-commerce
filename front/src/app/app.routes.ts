@@ -12,6 +12,8 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { TermsComponent }   from './pages/terms/terms.component';
 import { PrivacyComponent } from './pages/privacy/privacy.component';
 import { CookiesComponent } from './pages/cookies/cookies.component';
+import { PaymentSuccessComponent } from './pages/payment-success/payment-success.component';
+import { PaymentCancelComponent  } from './pages/payment-cancel/payment-cancel.component';
 
 // Guards
 import { AuthGuard } from './gards/auth.guard';
@@ -30,6 +32,8 @@ export const routes: Routes = [
   { path: 'cart', component: CartComponent, canActivate: [AuthGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
   { path: 'orders', component: OrdersComponent, canActivate: [AuthGuard] },
+  { path: 'payment-success', component: PaymentSuccessComponent },
+  { path: 'payment-cancel',  component: PaymentCancelComponent  },
   
   // Routes protégées (utilisateur connecté)
 

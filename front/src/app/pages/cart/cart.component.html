@@ -42,7 +42,10 @@
     <button class="btn btn-outline" routerLink="/">
       Continuer mes achats
     </button>
-    <button class="btn btn-primary">
+    <button
+      class="btn btn-primary"
+      [disabled]="items.length === 0"
+      (click)="onPay()">
       Passer à la caisse
     </button>
   </div>

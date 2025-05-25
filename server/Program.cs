@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using server.Data;
 using server.Models; // pour JwtSettings
 using System.Text;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Encoding.UTF8.GetBytes(jwtSettings["Key"] ?? ""))
         };
     });
+
+// Bind Stripe settings
+builder.Services.Configure<StripeSettings>(
+    builder.Configuration.GetSection("Stripe"));
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
 
 builder.Services.AddAuthorization();
 

@@ -1,6 +1,6 @@
 namespace server.Dtos
 {
-    public class CreatePaymentIntentDto
+    public class CreateCheckoutSessionDto
     {
         public int OrderId { get; set; }
     }

@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using server.Data;
 using server.Dtos;
+using server.Models;
 using Stripe;
+using Stripe.Checkout;
 using System.Security.Claims;
 
 namespace server.Controllers
@@ -15,30 +18,55 @@ namespace server.Controllers
     {
         private readonly AppDbContext _context;
 
-        public PaymentsController(AppDbContext context)
+        public PaymentsController(
+            AppDbContext context,
+            IOptions<StripeSettings> stripeOptions)
         {
             _context = context;
+            // Configurez votre clé secrète Stripe à chaque requête
+            StripeConfiguration.ApiKey = stripeOptions.Value.SecretKey;
         }
 
-        [HttpPost("create-intent")]
-        public async Task<IActionResult> CreatePaymentIntent([FromBody] CreatePaymentIntentDto dto)
+        [HttpPost("create-checkout-session")]
+        public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutSessionDto dto)
         {
             var userId = GetUserId();
             if (userId == null) return Unauthorized();
 
+            // On inclut Items puis Product pour construire les lignes Stripe
             var order = await _context.Orders
+                .Include(o => o.Items)
+                    .ThenInclude(oi => oi.Product)
                 .FirstOrDefaultAsync(o => o.Id == dto.OrderId && o.UserId == userId);
 
             if (order == null)
                 return NotFound(new { message = "Commande introuvable" });
 
-            if (!string.IsNullOrEmpty(order.StripePaymentIntentId))
-                return BadRequest(new { message = "Paiement déjà initié pour cette commande." });
+            if (!string.IsNullOrEmpty(order.StripeSessionId))
+                return BadRequest(new { message = "Session Stripe déjà créée pour cette commande." });
 
-            var options = new PaymentIntentCreateOptions
+            var lineItems = order.Items.Select(oi => new SessionLineItemOptions
             {
-                Amount = (long)(order.TotalAmount * 100), // Stripe utilise les centimes
-                Currency = "eur",
+                PriceData = new SessionLineItemPriceDataOptions
+                {
+                    UnitAmount = (long)(oi.Product!.Price * 100),
+                    Currency = "eur",
+                    ProductData = new SessionLineItemPriceDataProductDataOptions
+                    {
+                        Name = oi.Product.Name
+                    }
+                },
+                Quantity = oi.Quantity
+            }).ToList();
+
+            var domain = $"{Request.Scheme}://{Request.Host}";
+            var sessionOptions = new SessionCreateOptions
+            {
+                PaymentMethodTypes = new List<string> { "card" },
+                LineItems = lineItems,
+                Mode = "payment",
+                SuccessUrl = $"{domain}/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
+                CancelUrl = $"{domain}/cart",
                 Metadata = new Dictionary<string, string>
                 {
                     { "order_id", order.Id.ToString() },
@@ -46,23 +74,20 @@ namespace server.Controllers
                 }
             };
 
-            var service = new PaymentIntentService();
-            var paymentIntent = await service.CreateAsync(options);
+            var service = new SessionService();
+            var session = await service.CreateAsync(sessionOptions);
 
-            order.StripePaymentIntentId = paymentIntent.Id;
+            // On sauvegarde l'ID de session Stripe
+            order.StripeSessionId = session.Id;
             await _context.SaveChangesAsync();
 
-            return Ok(new
-            {
-                clientSecret = paymentIntent.ClientSecret,
-                paymentIntentId = paymentIntent.Id
-            });
+            return Ok(new { sessionId = session.Id, checkoutUrl = session.Url });
         }
 
         private int? GetUserId()
         {
-            var claim = User.Claims.FirstOrDefault(c =>
-                c.Type == ClaimTypes.NameIdentifier && int.TryParse(c.Value, out _));
+            var claim = User.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier && int.TryParse(c.Value, out _));
             return claim != null && int.TryParse(claim.Value, out int id) ? id : null;
         }
     }

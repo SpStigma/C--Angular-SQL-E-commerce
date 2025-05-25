@@ -77,7 +77,7 @@ namespace server.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Commande créée avec succès", orderId = order.Id });
+            return Ok(order);
         }
 
         // GET /api/orders
