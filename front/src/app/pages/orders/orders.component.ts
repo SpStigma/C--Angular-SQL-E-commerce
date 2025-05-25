@@ -1,7 +1,9 @@
+// front/src/app/pages/orders/orders.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule }       from '@angular/common';
-import { OrderService }       from '../../services/order.service';
-import { Order }              from '../../models/order.model';
+import { Router }            from '@angular/router';
+import { OrderService }      from '../../services/order.service';
+import { Order, OrderStatus }from '../../models/order.model';
 
 @Component({
   selector: 'app-orders',
@@ -14,8 +16,13 @@ export class OrdersComponent implements OnInit {
   orders: Order[] = [];
   loading = true;
   errorMsg = '';
+  // Expose l'enum pour le template
+  statusEnum = OrderStatus;
 
-  constructor(private orderService: OrderService) {}
+  constructor(
+    private orderService: OrderService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.orderService.getMyOrders().subscribe({
@@ -31,6 +38,6 @@ export class OrdersComponent implements OnInit {
   }
 
   viewDetails(id: number): void {
-    console.log('Voir détails commande', id);
+    this.router.navigate(['/orders', id]);
   }
 }

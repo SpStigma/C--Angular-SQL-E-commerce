@@ -61,12 +61,11 @@ namespace server.Controllers
                 UserId = userId.Value,
                 Items = orderItems,
                 TotalAmount = total,
-                Status = OrderStatus.Pending // par défaut, en attente de paiement
+                Status = OrderStatus.Pending
             };
 
             _context.Orders.Add(order);
 
-            // Décrémente les stocks
             foreach (var item in cart.Items)
             {
                 item.Product!.Stock -= item.Quantity;

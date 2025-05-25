@@ -3,12 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule }       from '@angular/common';
 import { firstValueFrom }     from 'rxjs';
 import { OrderService }       from '../../../../services/order.service';
-import { Order }              from '../../../../models/order.model';
+import { Order, OrderStatus } from '../../../../models/order.model';
 
 @Component({
   selector: 'app-admin-orders',
-  standalone: true,               // <-- mode standalone activé
-  imports: [CommonModule],        // <-- importe NgIf, NgFor, pipes…
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './admin-orders.component.html',
   styleUrls: ['./admin-orders.component.css']
 })
@@ -16,6 +16,7 @@ export class AdminOrdersComponent implements OnInit {
   orders: Order[] = [];
   loading = true;
   errorMsg = '';
+  statusEnum = OrderStatus;
 
   constructor(private orderService: OrderService) {}
 

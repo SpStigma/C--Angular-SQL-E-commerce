@@ -1,60 +1,60 @@
+<!-- front/src/app/pages/admin/orders/admin-orders/admin-orders.component.html -->
 <div class="p-6">
-  <h1 class="text-3xl font-bold mb-4">Toutes les commandes</h1>
+  <h1 class="text-3xl font-bold mb-6">Toutes les commandes</h1>
 
   <div *ngIf="loading" class="flex justify-center py-10">
     <span class="loading loading-spinner text-primary"></span>
   </div>
 
-  <div *ngIf="!loading">
-    <div *ngIf="orders.length === 0" class="alert alert-info shadow-lg mb-4">
-      <div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6"
-             fill="none" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M12 2C6.477 2 2 6.477 2 12s4.477 10 
-                   10 10 10-4.477 10-10S17.523 2 12 2z"/>
-        </svg>
-        <span>Aucune commande trouvée.</span>
-      </div>
+  <div *ngIf="!loading && orders.length === 0" class="alert alert-info shadow-lg mb-4">
+    <div class="flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="stroke-current flex-shrink-0 h-6 w-6 mr-2"
+           fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M12 2C6.477 2 2 6.477 
+                 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"/>
+      </svg>
+      <span>Aucune commande trouvée.</span>
     </div>
+  </div>
 
-    <div *ngIf="orders.length > 0" class="overflow-x-auto">
-      <table class="table table-zebra w-full">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Utilisateur</th>
-            <th>Date</th>
-            <th>Montant</th>
-            <th>Status</th>
-            <th>Détails</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let order of orders">
-            <td>{{ order.id }}</td>
-            <td>{{ order.userId }}</td>
-            <td>{{ order.createdAt | date:'short' }}</td>
-            <td>{{ order.totalAmount | currency:'EUR' }}</td>
-            <td>
-              <span class="badge"
-                    [ngClass]="{
-                      'badge-warning': order.status === 'Pending',
-                      'badge-info': order.status === 'Paid',
-                      'badge-success': order.status === 'Delivered',
-                      'badge-error': order.status === 'Cancelled'
-                    }">
-                {{ order.status }}
-              </span>
-            </td>
-            <td>
-              <button class="btn btn-sm btn-primary" (click)="viewDetails(order.id)">
-                Voir
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div *ngIf="!loading && orders.length > 0" class="overflow-x-auto">
+    <table class="table table-zebra w-full">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Utilisateur</th>
+          <th>Date</th>
+          <th>Montant</th>
+          <th>Status</th>
+          <th>Détails</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders">
+          <td>{{ order.id }}</td>
+          <td>{{ order.userId }}</td>
+          <td>{{ order.createdAt | date:'short' }}</td>
+          <td>{{ order.totalAmount | currency:'EUR' }}</td>
+          <td>
+            <span class="badge"
+                  [ngClass]="{
+                    'badge-warning': order.status === statusEnum.Pending,
+                    'badge-info':    order.status === statusEnum.Paid,
+                    'badge-success': order.status === statusEnum.Delivered,
+                    'badge-error':   order.status === statusEnum.Cancelled
+                  }">
+              {{ order.status }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-primary" (click)="viewDetails(order.id)">
+              Détails
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

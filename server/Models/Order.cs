@@ -2,9 +2,9 @@ namespace server.Models
 {
     public enum OrderStatus
     {
-        Pending,
-        Paid,
-        Failed
+        Pending,   // 0
+        Paid,      // 1
+        Failed     // 2
     }
 
     public class Order

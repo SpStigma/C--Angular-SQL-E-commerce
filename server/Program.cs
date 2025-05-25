@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using server.Data;
 using server.Models; // pour JwtSettings
 using System.Text;
+using System.Text.Json.Serialization;
 using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +29,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Ajout des services
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(opts =>
+    {
+        opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

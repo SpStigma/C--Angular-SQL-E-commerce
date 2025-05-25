@@ -11,11 +11,11 @@ export interface OrderItem {
 }
 
 export enum OrderStatus {
-  Pending = 'Pending',
-  Paid = 'Paid',
-  Shipped = 'Shipped',
-  Delivered = 'Delivered',
-  Cancelled = 'Cancelled'
+  Pending   = 0,
+  Paid      = 1,
+  Shipped   = 2,
+  Delivered = 3,
+  Cancelled = 4
 }
 
 export interface Order {
