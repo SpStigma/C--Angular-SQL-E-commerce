@@ -1,7 +1,6 @@
-// front/src/app/pages/admin/orders/admin-orders/admin-orders.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule }       from '@angular/common';
-import { firstValueFrom }     from 'rxjs';
+import { Router }             from '@angular/router';                    
 import { OrderService }       from '../../../../services/order.service';
 import { Order, OrderStatus } from '../../../../models/order.model';
 
@@ -13,24 +12,31 @@ import { Order, OrderStatus } from '../../../../models/order.model';
   styleUrls: ['./admin-orders.component.css']
 })
 export class AdminOrdersComponent implements OnInit {
-  orders: Order[] = [];
-  loading = true;
-  errorMsg = '';
-  statusEnum = OrderStatus;
+  orders: Order[]      = [];
+  loading: boolean     = true;                                         
+  errorMsg: string     = '';                                             
+  statusEnum = OrderStatus;                                         
 
-  constructor(private orderService: OrderService) {}
+  // ← injection du service et du router
+  constructor(
+    private orderService: OrderService,
+    private router: Router
+  ) {}
 
-  async ngOnInit(): Promise<void> {
-    try {
-      this.orders = await firstValueFrom(this.orderService.getAllOrders());
-    } catch {
-      this.errorMsg = 'Erreur lors du chargement des commandes';
-    } finally {
-      this.loading = false;
-    }
+  ngOnInit(): void {
+    this.orderService.getAllOrders().subscribe({
+      next: (orders) => {
+        this.orders  = orders;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.errorMsg = err.error?.message || 'Erreur lors du chargement des commandes';
+        this.loading  = false;
+      }
+    });
   }
 
   viewDetails(id: number): void {
-    console.log('Voir détails commande admin', id);
+    this.router.navigate(['/admin/orders', id]);
   }
 }

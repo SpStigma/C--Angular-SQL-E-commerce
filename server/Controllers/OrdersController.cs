@@ -96,7 +96,7 @@ namespace server.Controllers
 
         // 2) GET api/orders → toutes les commandes (admin uniquement)
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
         {
             var orders = await _context.Orders
