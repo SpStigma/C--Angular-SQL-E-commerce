@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule }        from '@angular/common';
-import { ActivatedRoute }    from '@angular/router';
+import { ActivatedRoute, Router }    from '@angular/router';
 import { ProductService }    from '../../services/product.service';
 import { CartService }       from '../../services/cart.service';
 import { Product }           from '../../models/product.model';
@@ -19,6 +19,7 @@ export class ProductDetailComponent implements OnInit {
   cartItemCount = 0;
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private productService: ProductService,
     private cartService: CartService
@@ -35,6 +36,10 @@ export class ProductDetailComponent implements OnInit {
   clearMessages(): void {
     this.errorMessage = '';
     this.successMessage = '';
+  }
+
+    goHome() {
+    this.router.navigateByUrl('/');
   }
 
   addToCart(): void {

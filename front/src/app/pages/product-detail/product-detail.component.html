@@ -33,7 +33,8 @@
             <td class="font-bold text-lg">Stock :</td>
             <td>
               <span class="badge" [ngClass]="p.stock > 0 ? 'badge-success' : 'badge-error'">
-                {{ p.stock > 0 ? 'En stock' : 'Rupture de stock' }}
+                {{ p.stock > 0 ? 'En stock' : 'Rupture de stock' }}:
+                <span>{{ product.stock }}</span>
               </span>
             </td>
           </tr>
@@ -53,7 +54,7 @@
           🛒 Ajouter au panier
         </button>
 
-        <button class="btn btn-outline flex-1" routerLink="/home">
+        <button class="btn btn-outline flex-1" (click)="goHome()">
           Home
         </button>
       </div>
