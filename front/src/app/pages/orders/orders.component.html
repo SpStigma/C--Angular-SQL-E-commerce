@@ -1,38 +1,59 @@
-<div class="p-4 flex flex-col items-center">
-  <h2 class="text-3xl font-bold mb-4">Mes Commandes</h2>
-  <div *ngIf="loading" class="animate-pulse text-center">Chargement...</div>
-  <div *ngIf="errorMessage" class="alert alert-error mb-4 w-full max-w-4xl">{{ errorMessage }}</div>
-  <div *ngIf="!loading && orders.length > 0" class="overflow-x-auto w-full">
-    <table class="table table-zebra w-full max-w-4xl mx-auto">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Date</th>
-          <th>Total</th>
-          <th>Statut</th>
-          <th>Détails</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let order of orders">
-          <td>{{ order.id }}</td>
-          <td>{{ order.createdAt | date:'short' }}</td>
-          <td>{{ order.totalAmount | currency }}</td>
-          <td>
-            <span [ngClass]="{
-               'badge badge-warning': order.status === 'Pending',
-               'badge badge-success': order.status === 'Paid',
-               'badge badge-info': order.status === 'Shipped',
-               'badge badge-accent': order.status === 'Delivered',
-               'badge badge-error': order.status === 'Cancelled'
-            }">{{ order.status }}</span>
-          </td>
-          <td>
-            <a [routerLink]="['/orders', order.id]" class="btn btn-sm btn-primary">Voir</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+<div class="p-6">
+  <h1 class="text-3xl font-bold mb-4">Mes commandes</h1>
+
+  <div *ngIf="loading" class="flex justify-center py-10">
+    <span class="loading loading-spinner text-primary"></span>
   </div>
-  <div *ngIf="!loading && orders.length === 0" class="text-center mt-4 w-full max-w-4xl">Vous n'avez aucune commande pour le moment.</div>
+
+  <div *ngIf="!loading">
+    <div *ngIf="orders.length === 0" class="alert alert-info shadow-lg mb-4">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6"
+             fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M12 2C6.477 2 2 6.477 2 12s4.477 10 
+                   10 10 10-4.477 10-10S17.523 2 12 2z"/>
+        </svg>
+        <span>Vous n’avez aucune commande.</span>
+      </div>
+    </div>
+
+    <div *ngIf="orders.length > 0" class="overflow-x-auto">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Montant</th>
+            <th>Status</th>
+            <th>Détails</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders">
+            <td>{{ order.createdAt | date:'short' }}</td>
+            <td>{{ order.totalAmount | currency:'EUR' }}</td>
+            <td>
+              <span class="badge"
+                    [ngClass]="{
+                      'badge-warning': order.status === 'Pending',
+                      'badge-info':    order.status === 'Paid',
+                      'badge-success': order.status === 'Delivered',
+                      'badge-error':   order.status === 'Cancelled'
+                    }">
+                {{ order.status }}
+              </span>
+            </td>
+            <td>
+              <button
+                class="btn btn-sm btn-primary"
+                (click)="viewDetails(order.id)"
+              >
+                Détails
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

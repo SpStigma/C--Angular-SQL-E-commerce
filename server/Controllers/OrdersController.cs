@@ -80,18 +80,28 @@ namespace server.Controllers
             return Ok(order);
         }
 
-        // GET /api/orders
-        [HttpGet]
-        public async Task<IActionResult> GetMyOrders()
+        // 1) GET api/orders/my → commandes de l'utilisateur
+        [HttpGet("my")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetMyOrders()
         {
             var userId = GetUserId();
             if (userId == null) return Unauthorized();
 
             var orders = await _context.Orders
-                .Where(o => o.UserId == userId && o.Status == OrderStatus.Paid)
+                .Where(o => o.UserId == userId.Value)
                 .Include(o => o.Items)
-                .ThenInclude(i => i.Product)
-                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
+            return Ok(orders);
+        }
+
+        // 2) GET api/orders → toutes les commandes (admin uniquement)
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
+        {
+            var orders = await _context.Orders
+                .Include(o => o.Items)
                 .ToListAsync();
 
             return Ok(orders);

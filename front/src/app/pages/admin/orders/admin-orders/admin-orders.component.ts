@@ -1,42 +1,35 @@
 // front/src/app/pages/admin/orders/admin-orders/admin-orders.component.ts
-
-import { Component, OnInit }               from '@angular/core';
-import { CommonModule }                    from '@angular/common';
-import { RouterModule }                    from '@angular/router';
-import { firstValueFrom }                  from 'rxjs';
-
-import { OrderService }                    from '../../../../services/order.service';
-import { Order }                           from '../../../../models/order.model';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule }       from '@angular/common';
+import { firstValueFrom }     from 'rxjs';
+import { OrderService }       from '../../../../services/order.service';
+import { Order }              from '../../../../models/order.model';
 
 @Component({
   selector: 'app-admin-orders',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
+  standalone: true,               // <-- mode standalone activé
+  imports: [CommonModule],        // <-- importe NgIf, NgFor, pipes…
   templateUrl: './admin-orders.component.html',
+  styleUrls: ['./admin-orders.component.css']
 })
 export class AdminOrdersComponent implements OnInit {
   orders: Order[] = [];
-  loading = false;
-  errorMessage = '';
+  loading = true;
+  errorMsg = '';
 
   constructor(private orderService: OrderService) {}
 
-  ngOnInit(): void {
-    this.fetchOrders();
-  }
-
-  private async fetchOrders(): Promise<void> {
-    this.loading = true;
-    this.errorMessage = '';
-
+  async ngOnInit(): Promise<void> {
     try {
-      // Si vous avez ajouté getAllOrders() côté service/admin, sinon getOrders()
-      this.orders = await firstValueFrom(this.orderService.getOrders());
-    } catch (err: any) {
-      console.error('Erreur chargement commandes :', err);
-      this.errorMessage = err?.message || 'Erreur chargement commandes';
+      this.orders = await firstValueFrom(this.orderService.getAllOrders());
+    } catch {
+      this.errorMsg = 'Erreur lors du chargement des commandes';
     } finally {
       this.loading = false;
     }
+  }
+
+  viewDetails(id: number): void {
+    console.log('Voir détails commande admin', id);
   }
 }

@@ -1,38 +1,36 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { OrderService } from '../../services/order.service';
-import { Order } from '../../models/order.model';
+import { CommonModule }       from '@angular/common';
+import { OrderService }       from '../../services/order.service';
+import { Order }              from '../../models/order.model';
 
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css']
 })
 export class OrdersComponent implements OnInit {
   orders: Order[] = [];
-  loading = false;
-  errorMessage: string | null = null;
+  loading = true;
+  errorMsg = '';
 
   constructor(private orderService: OrderService) {}
 
   ngOnInit(): void {
-    this.fetchOrders();
-  }
-
-  private fetchOrders(): void {
-    this.loading = true;
-    this.orderService.getOrders().subscribe({
-      next: (data) => {
-        this.orders = data;
+    this.orderService.getMyOrders().subscribe({
+      next: (orders: Order[]) => {
+        this.orders  = orders;
         this.loading = false;
       },
-      error: (err) => {
-        this.errorMessage = err.message;
-        this.loading = false;
+      error: () => {
+        this.errorMsg = 'Erreur lors du chargement des commandes';
+        this.loading  = false;
       }
     });
+  }
+
+  viewDetails(id: number): void {
+    console.log('Voir détails commande', id);
   }
 }
