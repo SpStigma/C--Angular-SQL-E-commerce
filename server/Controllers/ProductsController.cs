@@ -140,7 +140,7 @@ namespace server.Controllers
                     Size    = new Size(600, 337),
                     Mode    = ResizeMode.Pad,
                     Position= AnchorPositionMode.Center,     // centre l’image dans le padding
-                    PadColor= Color.LightGray                // couleur de fond (change selon ton UI)
+                    PadColor= Color.White                // couleur de fond (change selon ton UI)
                 }));
 
                 var thumbPath = Path.Combine(thumbDir, fileName);
