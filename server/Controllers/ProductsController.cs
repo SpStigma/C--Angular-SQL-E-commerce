@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Formats.Jpeg;   // si vous voulez spécifier la qualité JPEG
+using SixLabors.ImageSharp.Formats.Jpeg;
 using server.Data;
 using server.Dtos;
 using server.Models;
@@ -137,13 +137,15 @@ namespace server.Controllers
             {
                 image.Mutate(x => x.Resize(new ResizeOptions
                 {
-                    Size = new Size(600, 337),
-                    Mode = ResizeMode.Crop
+                    Size    = new Size(600, 337),
+                    Mode    = ResizeMode.Pad,
+                    Position= AnchorPositionMode.Center,     // centre l’image dans le padding
+                    PadColor= Color.LightGray                // couleur de fond (change selon ton UI)
                 }));
 
                 var thumbPath = Path.Combine(thumbDir, fileName);
-                // Méthode synchrone : détecte l’encodeur à partir de l’extension
-                image.Save(thumbPath);
+                // Sauvegarde en JPEG (tu peux ajuster la qualité via JpegEncoder si besoin)
+                image.Save(thumbPath, new JpegEncoder { Quality = 85 });
             }
 
             // 4) Renvoie l’URL publique de la miniature
