@@ -1,0 +1,15 @@
+<!-- front/src/app/shared/cookie-banner/cookie-banner.component.html -->
+<div
+  *ngIf="showBanner"
+  class="fixed bottom-0 w-full bg-gray-800 text-white p-4 flex justify-between items-center shadow-lg"
+>
+  <span class="text-sm">
+    Nous utilisons des cookies pour améliorer votre expérience. En continuant, vous acceptez notre politique de cookies.
+  </span>
+  <button
+    (click)="acceptCookies()"
+    class="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+  >
+    J’accepte
+  </button>
+</div>
