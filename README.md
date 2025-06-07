@@ -125,36 +125,34 @@ npm start      # opens at [http://localhost:4200](http://localhost:4200)
 
 ## Project Structure
 
-```
+Voici l’organisation du projet à la racine :
 
+```text
 C--Angular-SQL-E-commerce/
-├── C--Angular-SQL-E-commerce.sln
-├── front/                    # Angular client
+├── C--Angular-SQL-E-commerce.sln      # Solution .NET
+├── front/                             # Client Angular
 │   ├── src/
-│   │   ├── app/
-│   │   │   ├── guards/       # Admin/auth guards
-│   │   │   ├── interceptors/ # JWT interceptor
-│   │   │   ├── models/       # TS interfaces
-│   │   │   ├── pages/        # Components by route
-│   │   │   ├── services/     # HTTP services
-│   │   │   ├── app.routes.ts
-│   │   │   └── …
-│   │   └── environments/
-│   └── package.json
-├── server/                   # ASP.NET Core Web API
-│   ├── Controllers/          # REST endpoints
-│   ├── Data/                 # AppDbContext
-│   ├── Dtos/                 # Request/response DTOs
-│   ├── Migrations/           # EF Core migrations
-│   ├── Models/               # EF entity classes
-│   ├── Middleware/           # Error handling
-│   ├── Infrastructure/       # Services (e.g. Stripe)
-│   ├── appsettings.json
-│   ├── Program.cs
-│   └── server.csproj
-└── README.md
-
-````
+│   │   ├── app/                       # Code principal de l’application
+│   │   │   ├── guards/                # AuthGuard, AdminGuard
+│   │   │   ├── interceptors/          # JWT HTTP Interceptor
+│   │   │   ├── models/                # Interfaces TypeScript
+│   │   │   ├── pages/                 # Composants organisés par route
+│   │   │   ├── services/              # Services HTTP (Auth, Product, Cart…)
+│   │   │   ├── app.routes.ts          # Déclaration des routes
+│   │   │   └── shared/                # Composants et modules réutilisables
+│   └── package.json                   # Dépendances et scripts npm
+├── server/                            # API ASP.NET Core
+│   ├── Controllers/                   # Endpoints REST
+│   ├── Data/                          # AppDbContext et configuration EF Core
+│   ├── Dtos/                          # Data Transfer Objects
+│   ├── Infrastructure/                # Services métiers (Stripe, Email…)
+│   ├── Migrations/                    # Migrations EF Core
+│   ├── Models/                        # Entités de domaine
+│   ├── Middleware/                    # Gestion des erreurs, logging
+│   ├── Program.cs                     # Configuration et démarrage de l’application
+│   ├── appsettings.json               # Paramètres (connexions, JWT, Stripe)
+│   └── server.csproj                  # Projet .NET
+└── README.md                          # Documentation du projet
 
 ---
 
