@@ -30,7 +30,7 @@ Key features include user registration/login, product catalog, shopping cart, ch
 
 ```
 ┌──────────────┐      HTTP      ┌──────────────┐
-│  Angular App │ ──────────── ▶ │  ASP.NET API │
+│  Angular App │ ──────────── ▶ │  Angular App │
 │ (frontend)   │ ◀───────────   │ (backend)    │
 └──────────────┘                └──────────────┘
         │                              │
@@ -82,15 +82,12 @@ cd C--Angular-SQL-E-commerce
    ```
 
 
-````
-
 3. **Run the API**:
 
-   ```bash
+```bash
 dotnet run
 # listens on https://localhost:5292 by default
-````
-
+```
 4. **Swagger UI** available at `https://localhost:5292/swagger`.
 
 ### 3. Database
