@@ -119,8 +119,6 @@ dotnet run
 npm install
 npm start      # opens at [http://localhost:4200](http://localhost:4200)
 
-```
-
 ---
 
 ## Project Structure
@@ -154,7 +152,7 @@ C--Angular-SQL-E-commerce/
 │   └── server.csproj                  # Projet .NET
 └── README.md                          # Documentation du projet
 
----
+```
 
 ## Backend
 
@@ -244,41 +242,6 @@ Folder structure under `src/app/pages`:
 
 ---
 
-## Running with Docker (optional)
-
-```yaml
-# docker-compose.yml
-services:
-  db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      SA_PASSWORD: "Your_strong!Passw0rd"
-      ACCEPT_EULA: "Y"
-    ports:
-      - "1433:1433"
-  api:
-    build: ./server
-    environment:
-      ConnectionStrings__DefaultConnection: "Server=db;Database=EcommerceDb;User Id=sa;Password=Your_strong!Passw0rd;"
-      …
-    ports:
-      - "5292:80"
-    depends_on:
-      - db
-  front:
-    build: ./front
-    ports:
-      - "4200:80"
-    depends_on:
-      - api
-````
-
-```bash
-docker-compose up --build
-```
-
----
-
 ## Testing
 
 * **Backend unit tests** (if any) with `dotnet test` in a `server.Tests` project.
@@ -298,4 +261,4 @@ docker-compose up --build
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is made by me.
