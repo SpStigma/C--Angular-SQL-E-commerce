@@ -15,20 +15,30 @@ using server.Models;
 
 namespace server.Controllers
 {
+    /// <summary>
+    /// Provides CRUD operations for products and image uploads.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly AppDbContext      _context;
+        private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="ProductsController"/>.
+        /// </summary>
+        /// <param name="context">Database context.</param>
+        /// <param name="env">Hosting environment.</param>
         public ProductsController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
             _env     = env;
         }
 
-        // GET api/products
+        /// <summary>
+        /// Retrieves all products.
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetProducts()
         {
@@ -36,7 +46,10 @@ namespace server.Controllers
             return Ok(products);
         }
 
-        // GET api/products/{id}
+        /// <summary>
+        /// Retrieves a product by its ID.
+        /// </summary>
+        /// <param name="id">Product identifier.</param>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(int id)
         {
@@ -47,7 +60,10 @@ namespace server.Controllers
             return Ok(product);
         }
 
-        // POST api/products
+        /// <summary>
+        /// Creates a new product (admin only).
+        /// </summary>
+        /// <param name="dto">Product data transfer object.</param>
         [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromBody] ProductDto dto)
@@ -70,7 +86,11 @@ namespace server.Controllers
             return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
         }
 
-        // PUT api/products/{id}
+        /// <summary>
+        /// Updates an existing product (admin only).
+        /// </summary>
+        /// <param name="id">Product identifier.</param>
+        /// <param name="dto">Updated product data.</param>
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDto dto)
@@ -92,7 +112,10 @@ namespace server.Controllers
             return Ok(product);
         }
 
-        // DELETE api/products/{id}
+        /// <summary>
+        /// Deletes a product by ID (admin only).
+        /// </summary>
+        /// <param name="id">Product identifier.</param>
         [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
@@ -106,8 +129,10 @@ namespace server.Controllers
             return NoContent();
         }
 
-        // POST api/products/upload
-        // Upload d’image + génération d’une miniature 600×337 (ratio 16:9)
+        /// <summary>
+        /// Uploads an image and generates a 600×337 thumbnail (admin only).
+        /// </summary>
+        /// <param name="file">Image file to upload.</param>
         [Authorize(Roles = "admin")]
         [HttpPost("upload")]
         public async Task<IActionResult> UploadImage(IFormFile file)
@@ -115,7 +140,7 @@ namespace server.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "Fichier invalide" });
 
-            // 1) Prépare les répertoires
+            // Prepare directories
             var uploadsDir = Path.Combine(_env.ContentRootPath, "Uploads");
             if (!Directory.Exists(uploadsDir))
                 Directory.CreateDirectory(uploadsDir);
@@ -123,38 +148,39 @@ namespace server.Controllers
             var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
             var filePath = Path.Combine(uploadsDir, fileName);
 
-            // 2) Enregistre l’original
+            // Save original
             using (var stream = new FileStream(filePath, FileMode.Create))
                 await file.CopyToAsync(stream);
 
-            // 3) Génère la miniature
+            // Generate thumbnail
             var thumbDir = Path.Combine(uploadsDir, "thumbs");
             if (!Directory.Exists(thumbDir))
                 Directory.CreateDirectory(thumbDir);
 
-            // Charge l’image depuis le chemin, crop & resize, puis sauvegarde en 600×337
             using (Image image = Image.Load(filePath))
             {
                 image.Mutate(x => x.Resize(new ResizeOptions
                 {
-                    Size    = new Size(600, 337),
-                    Mode    = ResizeMode.Pad,
-                    Position= AnchorPositionMode.Center,     // centre l’image dans le padding
-                    PadColor= Color.White                // couleur de fond (change selon ton UI)
+                    Size     = new Size(600, 337),
+                    Mode     = ResizeMode.Pad,
+                    Position = AnchorPositionMode.Center,
+                    PadColor = Color.White
                 }));
 
                 var thumbPath = Path.Combine(thumbDir, fileName);
-                // Sauvegarde en JPEG (tu peux ajuster la qualité via JpegEncoder si besoin)
                 image.Save(thumbPath, new JpegEncoder { Quality = 85 });
             }
 
-            // 4) Renvoie l’URL publique de la miniature
             var baseUrl      = $"{Request.Scheme}://{Request.Host}";
             var thumbnailUrl = $"{baseUrl}/uploads/thumbs/{fileName}";
             return Ok(new { imageUrl = thumbnailUrl });
         }
 
-        // PUT api/products/{id}/stock
+        /// <summary>
+        /// Updates stock of a product by a delta value (admin only).
+        /// </summary>
+        /// <param name="id">Product identifier.</param>
+        /// <param name="delta">Change in stock quantity.</param>
         [Authorize(Roles = "admin")]
         [HttpPut("{id}/stock")]
         public async Task<IActionResult> UpdateStock(int id, [FromBody] int delta)

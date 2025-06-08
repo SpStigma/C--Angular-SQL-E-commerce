@@ -7,6 +7,9 @@ using System.Security.Claims;
 
 namespace server.Controllers
 {
+    /// <summary>
+    /// Handles order placement and retrieval for authenticated users.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
@@ -14,17 +17,29 @@ namespace server.Controllers
     {
         private readonly AppDbContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrdersController"/> class.
+        /// </summary>
+        /// <param name="context">The database context.</param>
         public OrdersController(AppDbContext context)
         {
             _context = context;
         }
 
-        // POST /api/orders
+        /// <summary>
+        /// Places an order for the current user's cart contents.
+        /// </summary>
+        /// <returns>
+        /// <see cref="OkObjectResult"/> with the created <see cref="Order"/> on success; 
+        /// <see cref="UnauthorizedResult"/> if not authenticated; 
+        /// <see cref="BadRequestObjectResult"/> if cart is empty or stock insufficient.
+        /// </returns>
         [HttpPost]
         public async Task<IActionResult> PlaceOrder()
         {
             var userId = GetUserId();
-            if (userId == null) return Unauthorized();
+            if (userId == null) 
+                return Unauthorized();
 
             var cart = await _context.Carts
                 .Include(c => c.Items)
@@ -32,25 +47,22 @@ namespace server.Controllers
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart == null || !cart.Items.Any())
-            {
                 return BadRequest(new { message = "Le panier est vide" });
-            }
 
-            // Vérifie que tous les produits ont du stock suffisant
+            // Vérification de stock
             foreach (var item in cart.Items)
             {
                 if (item.Product == null)
                     return BadRequest(new { message = $"Produit {item.ProductId} introuvable" });
-
                 if (item.Product.Stock < item.Quantity)
                     return BadRequest(new { message = $"Stock insuffisant pour le produit '{item.Product.Name}'" });
             }
 
-            // Prépare les items de la commande
+            // Préparation des OrderItem
             var orderItems = cart.Items.Select(item => new OrderItem
             {
                 ProductId = item.ProductId,
-                Quantity = item.Quantity,
+                Quantity  = item.Quantity,
                 UnitPrice = item.Product!.Price
             }).ToList();
 
@@ -58,33 +70,36 @@ namespace server.Controllers
 
             var order = new Order
             {
-                UserId = userId.Value,
-                Items = orderItems,
+                UserId      = userId.Value,
+                Items       = orderItems,
                 TotalAmount = total,
-                Status = OrderStatus.Pending
+                Status      = OrderStatus.Pending
             };
 
             _context.Orders.Add(order);
 
+            // Mise à jour du stock et vidage du panier
             foreach (var item in cart.Items)
-            {
                 item.Product!.Stock -= item.Quantity;
-            }
-
-            // Vide le panier
             cart.Items.Clear();
 
             await _context.SaveChangesAsync();
-
             return Ok(order);
         }
 
-        // 1) GET api/orders/my → commandes de l'utilisateur
+        /// <summary>
+        /// Retrieves all orders placed by the current user.
+        /// </summary>
+        /// <returns>
+        /// <see cref="OkObjectResult"/> with a list of <see cref="Order"/>; 
+        /// <see cref="UnauthorizedResult"/> if not authenticated.
+        /// </returns>
         [HttpGet("my")]
         public async Task<ActionResult<IEnumerable<Order>>> GetMyOrders()
         {
             var userId = GetUserId();
-            if (userId == null) return Unauthorized();
+            if (userId == null) 
+                return Unauthorized();
 
             var orders = await _context.Orders
                 .Where(o => o.UserId == userId.Value)
@@ -94,7 +109,12 @@ namespace server.Controllers
             return Ok(orders);
         }
 
-        // 2) GET api/orders → toutes les commandes (admin uniquement)
+        /// <summary>
+        /// Retrieves all orders (admin only).
+        /// </summary>
+        /// <returns>
+        /// <see cref="OkObjectResult"/> with a list of <see cref="Order"/>.
+        /// </returns>
         [HttpGet]
         [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
@@ -106,7 +126,10 @@ namespace server.Controllers
             return Ok(orders);
         }
 
-        // 🔐 Utilitaire pour récupérer l'ID de l'utilisateur connecté
+        /// <summary>
+        /// Extracts the authenticated user's ID from JWT claims.
+        /// </summary>
+        /// <returns>The user ID, or <c>null</c> if not found or invalid.</returns>
         private int? GetUserId()
         {
             var claim = User.Claims.FirstOrDefault(c =>

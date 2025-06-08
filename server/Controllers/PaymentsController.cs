@@ -11,6 +11,9 @@ using System.Security.Claims;
 
 namespace server.Controllers
 {
+    /// <summary>
+    /// Manages Stripe payment sessions for orders.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
@@ -18,15 +21,23 @@ namespace server.Controllers
     {
         private readonly AppDbContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PaymentsController"/> class.
+        /// </summary>
+        /// <param name="context">The application database context.</param>
+        /// <param name="stripeOptions">Stripe settings (contains the secret key).</param>
         public PaymentsController(
             AppDbContext context,
             IOptions<StripeSettings> stripeOptions)
         {
             _context = context;
-            // Configurez votre clé secrète Stripe à chaque requête
+            // Configure Stripe secret key for each request
             StripeConfiguration.ApiKey = stripeOptions.Value.SecretKey;
         }
 
+        /// <summary>
+        /// Creates a Stripe Checkout session for the specified order.
+        /// </summary>
         [HttpPost("create-checkout-session")]
         public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutSessionDto dto)
         {
@@ -57,7 +68,7 @@ namespace server.Controllers
                 Quantity = oi.Quantity
             }).ToList();
 
-            // ← ICI : on prend l'origine de la requête (votre SPA Angular)
+            // Determine the origin for success/cancel URLs (e.g., the SPA origin)
             var originHeader = Request.Headers["Origin"].ToString();
             var origin = !string.IsNullOrEmpty(originHeader)
                 ? originHeader.TrimEnd('/')
@@ -86,6 +97,10 @@ namespace server.Controllers
             return Ok(new { sessionId = session.Id, checkoutUrl = session.Url });
         }
 
+        /// <summary>
+        /// Extracts the authenticated user's ID from JWT claims.
+        /// </summary>
+        /// <returns>The user ID, or <c>null</c> if not authenticated or invalid.</returns>
         private int? GetUserId()
         {
             var claim = User.Claims
